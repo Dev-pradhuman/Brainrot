@@ -1,0 +1,18 @@
+# Secrets — never commit
+shorts_generator/.env
+shorts_generator/client_secret*.json
+shorts_generator/token*.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Generated media
+output/
+shorts_generator/_work/
+shorts_generator/games_seen.json
+
+# Editor / vault
+.obsidian/
+.vscode/

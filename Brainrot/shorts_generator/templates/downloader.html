@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ReelNexus - Loop Downloader</title>
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
+<style>
+/* CSS RESET & VARIABLES */
+:root {
+  --bg-darker: #06060a;
+  --bg-dark: #09090e;
+  --bg-card: #12121c;
+  --bg-card-hover: #171726;
+  --border-color: #1e1e30;
+  --border-color-hover: #33334d;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --text-accent: #a855f7;
+  --text-accent-hover: #c084fc;
+  --glow-purple: 0 0 20px rgba(168, 85, 247, 0.45);
+  --glow-purple-light: 0 0 12px rgba(168, 85, 247, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--bg-darker);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* CUSTOM SCROLLBAR */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-darker);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-accent);
+}
+
+/* NAVIGATION */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 64px;
+  background: rgba(9, 9, 14, 0.85);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(16px);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  cursor: pointer;
+}
+
+.logo svg {
+  color: var(--text-accent);
+  filter: drop-shadow(var(--glow-purple-light));
+}
+
+.logo span {
+  color: var(--text-accent);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.yt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: #4ade80;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.btn-back-nav {
+  background: #11111a;
+  color: #c4b5fd;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-back-nav:hover {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: var(--text-accent);
+  box-shadow: var(--glow-purple-light);
+  color: #fff;
+}
+
+/* SECTION CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: 32px auto 60px;
+  padding: 0 24px;
+}
+
+.header-block {
+  margin-bottom: 28px;
+}
+
+.header-block h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.header-block h1 span {
+  background: linear-gradient(to right, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-block p {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* COOKIES STATUS CARD */
+.cookies-card {
+  background: rgba(18, 18, 28, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(10px);
+}
+
+.cookies-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cookies-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--text-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cookies-details h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.cookies-details p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cookies-status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cookies-active {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.cookies-missing {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+/* MODE TOGGLE BAR */
+.mode-bar {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(18, 18, 28, 0.3);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  margin-bottom: 28px;
+  justify-content: space-between;
+}
+
+.mode-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mode-left label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #c4b5fd;
+}
+
+.mode-select {
+  background: #11111a;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: border-color 0.2s;
+}
+
+.mode-select:focus {
+  border-color: var(--text-accent);
+}
+
+/* BATCH INPUT GRID */
+.niches-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 1024px) {
+  .niches-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .niches-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.niche-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.niche-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--niche-gradient, linear-gradient(90deg, #7c3aed, #a855f7));
+}
+
+.niche-card:hover {
+  border-color: var(--border-color-hover);
+}
+
+.niche-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.niche-title {
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.niche-title span {
+  font-size: 18px;
+}
+
+.niche-folder {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.inputs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.url-input {
+  width: 100%;
+  background: rgba(9, 9, 14, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-main);
+  font-size: 12px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.url-input:focus {
+  outline: none;
+  border-color: var(--text-accent);
+  background: rgba(16, 16, 26, 0.6);
+  box-shadow: var(--glow-purple-light);
+}
+
+/* CONTROLS FOOTER */
+.controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: rgba(18, 18, 28, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.controls-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.controls-left label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.browser-select {
+  background: #11111a;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.browser-select:focus {
+  border-color: var(--text-accent);
+}
+
+.btn-download-action {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--glow-purple-light);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-download-action:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--glow-purple);
+  filter: brightness(1.1);
+}
+
+.btn-download-action:disabled {
+  background: #222230;
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* TERMINAL CONSOLE */
+.console-panel {
+  display: none;
+  background: #040406;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.console-header {
+  background: #0d0d12;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.console-title {
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c4b5fd;
+}
+
+.console-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f14c4c;
+  animation: blink 1s infinite alternate;
+}
+
+@keyframes blink {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
+}
+
+.console-active .console-dot {
+  background: #22c55e;
+}
+
+.console-body {
+  padding: 16px 20px;
+  height: 320px;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #4af626;
+  background: #040406;
+}
+
+.console-line {
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}
+
+.console-line.info { color: #38bdf8; }
+.console-line.success { color: #4ade80; }
+.console-line.error { color: #f87171; }
+.console-line.warning { color: #facc15; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="logo" onclick="window.location.href='/'">
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+      Reel<span>Nexus</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    {% if yt_ready %}
+    <div class="yt-pill">
+      <span class="dot"></span> YouTube connected
+    </div>
+    {% endif %}
+    <a href="/channels" class="btn-back-nav" style="margin-right:10px;">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Channels
+    </a>
+    <a href="/" class="btn-back-nav">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Dashboard
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+  
+  <div class="header-block">
+    <h1>Background Loop <span>Downloader</span></h1>
+    <p>Automatically find and download the best looping background clips directly to your Google Drive.</p>
+  </div>
+
+  <!-- COOKIES FILE STATUS -->
+  <div class="cookies-card">
+    <div class="cookies-info">
+      <div class="cookies-icon">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 14h.01M12 8v5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="cookies-details">
+        <h3>Local Authentication State</h3>
+        <p id="cookies-explanation">Allows yt-dlp to decrypt YouTube requests and bypass rate limits automatically.</p>
+      </div>
+    </div>
+    <div id="cookies-status-badge" class="cookies-status cookies-missing">Checking...</div>
+  </div>
+
+  <!-- MODE SELECTOR -->
+  <div class="mode-bar">
+    <div class="mode-left">
+      <label for="mode-select">Downloader Mode:</label>
+      <select id="mode-select" class="mode-select" onchange="toggleMode()">
+        <option value="search">Auto-Search Mode (Searches YouTube automatically for queries)</option>
+        <option value="manual">Manual URL Mode (Download exact YouTube links)</option>
+      </select>
+    </div>
+    <div style="font-size: 11.5px; color: var(--text-muted);">Switch modes to clear or pre-fill inputs.</div>
+  </div>
+
+  <form id="downloader-form">
+    <!-- NICHES BATCH LIST -->
+    <div class="niches-grid">
+      
+      <!-- REDDIT -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #ff4500, #ff8c00);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>👽</span> Reddit Storytelling</div>
+          <div class="niche-folder">Bg_games</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_games" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_games" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_games" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_games" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_games" placeholder="Item 5"/>
+        </div>
+      </div>
+
+      <!-- SIMPSONS -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #ffcc00, #ffa500);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>🍩</span> Simpsons</div>
+          <div class="niche-folder">Bg_simpsons</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_simpsons" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_simpsons" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_simpsons" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_simpsons" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_simpsons" placeholder="Item 5"/>
+        </div>
+      </div>
+
+      <!-- COLD STORY -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #0ea5e9, #2563eb);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>🧊</span> Cold Story</div>
+          <div class="niche-folder">Bg_cold</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_cold" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_cold" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_cold" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_cold" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_cold" placeholder="Item 5"/>
+        </div>
+      </div>
+
+      <!-- RELATIONSHIP ADVICE -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #db2777, #ec4899);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>💔</span> Relationship Advice</div>
+          <div class="niche-folder">Bg_relationship</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_relationship" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_relationship" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_relationship" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_relationship" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_relationship" placeholder="Item 5"/>
+        </div>
+      </div>
+
+      <!-- HORROR STORIES -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #dc2626, #7f1d1d);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>👻</span> Horror Stories</div>
+          <div class="niche-folder">Bg_horror</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_horror" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_horror" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_horror" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_horror" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_horror" placeholder="Item 5"/>
+        </div>
+      </div>
+
+      <!-- ANIME -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #8b5cf6, #ec4899);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>🌸</span> Anime</div>
+          <div class="niche-folder">Bg_anime</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_anime" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_anime" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_anime" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_anime" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_anime" placeholder="Item 5"/>
+        </div>
+      </div>
+
+      <!-- BETRAYAL -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #b91c1c, #450a0a);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>🔪</span> Betrayal</div>
+          <div class="niche-folder">Bg_betrayal</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_betrayal" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_betrayal" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_betrayal" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_betrayal" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_betrayal" placeholder="Item 5"/>
+        </div>
+      </div>
+
+      <!-- FUNNY STORIES -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #eab308, #ca8a04);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>😂</span> Funny Stories</div>
+          <div class="niche-folder">Bg_funny</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_funny" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_funny" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_funny" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_funny" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_funny" placeholder="Item 5"/>
+        </div>
+      </div>
+
+      <!-- GAMING REACTIONS -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #10b981, #047857);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>🎮</span> Gaming Reactions</div>
+          <div class="niche-folder">Bg_games_reactions</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_games_reactions" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_games_reactions" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_games_reactions" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_games_reactions" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_games_reactions" placeholder="Item 5"/>
+        </div>
+      </div>
+
+      <!-- SPACE MYSTERIES -->
+      <div class="niche-card" style="--niche-gradient: linear-gradient(90deg, #0ea5e9, #1e3a8a);">
+        <div class="niche-title-bar">
+          <div class="niche-title"><span>🚀</span> Space Mysteries</div>
+          <div class="niche-folder">Bg_space</div>
+        </div>
+        <div class="inputs-list">
+          <input type="text" class="url-input" name="Bg_space" placeholder="Item 1"/>
+          <input type="text" class="url-input" name="Bg_space" placeholder="Item 2"/>
+          <input type="text" class="url-input" name="Bg_space" placeholder="Item 3"/>
+          <input type="text" class="url-input" name="Bg_space" placeholder="Item 4"/>
+          <input type="text" class="url-input" name="Bg_space" placeholder="Item 5"/>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CONTROLS FOOTER -->
+    <div class="controls-bar">
+      <div class="controls-left">
+        <label for="browser-select">Bypass bot checks via Browser Cookies:</label>
+        <select id="browser-select" class="browser-select">
+          <option value="none">None (Use cookies.txt if present)</option>
+          <option value="chrome">Google Chrome</option>
+          <option value="edge">Microsoft Edge</option>
+          <option value="firefox">Mozilla Firefox</option>
+          <option value="brave">Brave Browser</option>
+          <option value="safari">Safari</option>
+        </select>
+      </div>
+      <button type="submit" id="btn-submit" class="btn-download-action">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Start Batch Process
+      </button>
+    </div>
+  </form>
+
+  <!-- LIVE DOWNLOAD CONSOLE -->
+  <div id="console-panel" class="console-panel">
+    <div class="console-header">
+      <div id="console-header-title" class="console-title">
+        <span class="console-dot"></span> Downloader Console: Idle
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted);">Real-time logs</div>
+    </div>
+    <div id="console-body" class="console-body">
+      <div class="console-line info">Console ready. Submit inputs to start.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let currentJobId = null;
+let pollInterval = null;
+
+// Pre-defined default search queries for all 10 niches
+const defaultQueries = {
+  Bg_games: [
+    "Minecraft parkour gameplay loop no commentary",
+    "GTA 5 mega ramp car jumps gameplay",
+    "Satisfying ASMR soap cutting compilation 1080p",
+    "Subway Surfers gameplay vertical loop",
+    "Satisfying kinetic sand slicing ASMR"
+  ],
+  Bg_simpsons: [
+    "Simpsons aesthetic lofi background loop",
+    "Simpsons vaporwave drive visual loop",
+    "Retro cartoon scenery lofi background",
+    "Simpsons lofi room animation 1080p",
+    "Springfield sunset B-roll loop"
+  ],
+  Bg_cold: [
+    "Dark city night drive aesthetic loop",
+    "Rainy window lofi street neon lights",
+    "Gym motivation cinematic B-roll loop",
+    "Dark lofi walk cyber street B-roll",
+    "Moody dark stormy ocean waves"
+  ],
+  Bg_relationship: [
+    "Lofi couple animation loop aesthetic",
+    "Cozy coffee shop rainy day lofi loop",
+    "Sunset beach walk cinematic B-roll",
+    "Aesthetic bedroom lofi animation window",
+    "Soft romantic city lights walk"
+  ],
+  Bg_horror: [
+    "Minecraft horror map gameplay no commentary",
+    "Spooky dark forest foggy walk B-roll",
+    "Abandoned building cinematic walk B-roll",
+    "Eerie Liminal Spaces slideshow loop",
+    "The Backrooms gameplay loop vertical"
+  ],
+  Bg_anime: [
+    "Retro anime scenery lofi background loop",
+    "Anime study room aesthetic loop",
+    "Aesthetic 90s anime landscape sunset",
+    "Rainy anime street lofi background",
+    "Satisfying anime lofi room loop"
+  ],
+  Bg_betrayal: [
+    "Cyberpunk city night drive loop",
+    "Tense Minecraft speedrun gameplay background",
+    "Neon highway driving rainy aesthetic",
+    "Fast-paced Subway Surfers gameplay",
+    "Dark stormy sky lightning loop B-roll"
+  ],
+  Bg_funny: [
+    "Fall Guys gameplay no commentary loop",
+    "Roblox obby gameplay background",
+    "Goofy ragdoll physics game compilation",
+    "Minecraft colorful dropper gameplay loop",
+    "Stumble Guys vertical gameplay loop"
+  ],
+  Bg_games_reactions: [
+    "Valorant high rank clean gameplay no commentary",
+    "Minecraft Bedwars clutch gameplay loop",
+    "CS2 aim training map gameplay loop",
+    "Fortnite creative course gameplay",
+    "Apex Legends movement clips compilation"
+  ],
+  Bg_space: [
+    "Space cosmic mysteries loop B-roll",
+    "Rogue planets space anomaly loop",
+    "Terrifying black hole simulation loop",
+    "NASA space flight travel B-roll",
+    "Deep space stars nebula B-roll"
+  ]
+};
+
+// Toggle inputs between Auto-Search and Manual URL modes
+function toggleMode() {
+  const mode = document.getElementById('mode-select').value;
+  const inputs = document.querySelectorAll('.url-input');
+  
+  inputs.forEach(input => {
+    const folder = input.name;
+    // Find index of this input within its group
+    const siblings = Array.from(input.parentNode.children);
+    const index = siblings.indexOf(input);
+    
+    if (mode === 'search') {
+      input.placeholder = `Search Query ${index + 1}`;
+      input.value = defaultQueries[folder] && defaultQueries[folder][index] ? defaultQueries[folder][index] : "";
+    } else {
+      input.placeholder = `YouTube URL ${index + 1} (Optional)`;
+      input.value = "";
+    }
+  });
+}
+
+// Fetch local cookies file status on page load
+async function checkCookies() {
+  try {
+    const res = await fetch('/api/downloader/cookies-check');
+    const data = await res.json();
+    const badge = document.getElementById('cookies-status-badge');
+    const explanation = document.getElementById('cookies-explanation');
+    
+    if (data.exists) {
+      badge.textContent = "cookies.txt Active";
+      badge.className = "cookies-status cookies-active";
+      explanation.textContent = "Found cookies.txt inside your downloader folder. Auto-authenticating loops.";
+    } else {
+      badge.textContent = "cookies.txt Missing";
+      badge.className = "cookies-status cookies-missing";
+      explanation.innerHTML = "No cookies.txt found. Consider exporting browser cookies to prevent rate limits.";
+    }
+  } catch (err) {
+    console.error("Failed to fetch cookies status", err);
+  }
+}
+
+// Form Submission
+document.getElementById('downloader-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  // Disable button
+  const submitBtn = document.getElementById('btn-submit');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = `<svg class="spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)"></circle><path d="M4 12a8 8 0 018-8v8H4z" fill="currentColor"></path></svg> Downloading...`;
+  
+  // Show console panel
+  const consolePanel = document.getElementById('console-panel');
+  consolePanel.style.display = 'block';
+  consolePanel.className = 'console-panel console-active';
+  
+  const consoleBody = document.getElementById('console-body');
+  consoleBody.innerHTML = `<div class="console-line info">Preparing batch jobs...</div>`;
+  
+  const headerTitle = document.getElementById('console-header-title');
+  headerTitle.innerHTML = `<span class="console-dot"></span> Downloader Console: Active`;
+
+  // Gather Inputs
+  const inputs = document.querySelectorAll('.url-input');
+  const batchJobs = {};
+  
+  inputs.forEach(input => {
+    const folder = input.name;
+    const value = input.value.trim();
+    if (value) {
+      if (!batchJobs[folder]) {
+        batchJobs[folder] = [];
+      }
+      batchJobs[folder].push(value);
+    }
+  });
+
+  const browser = document.getElementById('browser-select').value;
+  const mode = document.getElementById('mode-select').value;
+
+  if (Object.keys(batchJobs).length === 0) {
+    consoleBody.innerHTML += `<div class="console-line error">Error: No inputs entered. Please provide at least one search query or link.</div>`;
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Start Batch Process`;
+    headerTitle.innerHTML = `<span class="console-dot"></span> Downloader Console: Idle`;
+    consolePanel.className = 'console-panel';
+    return;
+  }
+
+  // Send request
+  try {
+    const response = await fetch('/api/downloader/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobs: batchJobs, browser: browser, mode: mode })
+    });
+    
+    const data = await response.json();
+    if (data.error) {
+      consoleBody.innerHTML += `<div class="console-line error">Error starting job: ${data.error}</div>`;
+      resetSubmitButton();
+      return;
+    }
+    
+    currentJobId = data.job_id;
+    // Start polling logs
+    pollInterval = setInterval(pollLogs, 1000);
+    
+  } catch (err) {
+    consoleBody.innerHTML += `<div class="console-line error">Network error starting job: ${err}</div>`;
+    resetSubmitButton();
+  }
+});
+
+function resetSubmitButton() {
+  const submitBtn = document.getElementById('btn-submit');
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = `<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Start Batch Process`;
+  
+  const headerTitle = document.getElementById('console-header-title');
+  headerTitle.innerHTML = `<span class="console-dot"></span> Downloader Console: Idle`;
+  
+  const consolePanel = document.getElementById('console-panel');
+  consolePanel.className = 'console-panel';
+}
+
+async function pollLogs() {
+  if (!currentJobId) return;
+  
+  try {
+    const res = await fetch(`/api/downloader/status/${currentJobId}`);
+    const data = await res.json();
+    
+    if (data.error) {
+      clearInterval(pollInterval);
+      return;
+    }
+    
+    const consoleBody = document.getElementById('console-body');
+    // Clear and re-populate console
+    let html = "";
+    data.log.forEach(line => {
+      let cls = "";
+      if (line.includes("ERROR") || line.includes("❌")) cls = "error";
+      else if (line.includes("[Cookies]") || line.includes("Success") || line.includes("Downloaded") || line.includes("Found matching video")) cls = "success";
+      else if (line.includes("[Download") || line.includes("[FFmpeg]") || line.includes("[Search]")) cls = "info";
+      else if (line.includes("WARNING")) cls = "warning";
+      
+      html += `<div class="console-line ${cls}">${escapeHtml(line)}</div>`;
+    });
+    consoleBody.innerHTML = html;
+    consoleBody.scrollTop = consoleBody.scrollHeight; // Scroll to bottom
+    
+    if (data.status === 'done' || data.status === 'error') {
+      clearInterval(pollInterval);
+      resetSubmitButton();
+    }
+  } catch (err) {
+    console.error("Error polling downloader logs", err);
+  }
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// Spin Animation Keyframes Style injection
+const style = document.createElement('style');
+style.innerHTML = `
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+`;
+document.head.appendChild(style);
+
+// Check cookies status on load
+checkCookies();
+// Initialize inputs with Auto-Search queries by default
+toggleMode();
+</script>
+</body>
+</html>

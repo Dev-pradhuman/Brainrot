@@ -1,0 +1,163 @@
+{
+  "output_dir": "../output",
+  "resolution": [1080, 1920],
+  "fps": 30,
+  "target_words": 300,
+  "max_seconds": 150,
+
+  "background_dir": "../Background_videos",
+  "tts_engine": "edge",
+  "edge_voice": "en-US-AvaMultilingualNeural",
+  "edge_rate": "-4%",
+
+  "elevenlabs": {
+    "api_key": "${ELEVENLABS_API_KEY}",
+    "voice_id": "21m00Tcm4TlvDq8ikWAM",
+    "model_id": "eleven_multilingual_v2",
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.3,
+    "speed": 1.05
+  },
+
+  "caption": {
+    "font": "Anton",
+    "fonts_dir": "fonts",
+    "font_size": 96,
+    "bold": 0,
+    "primary_color": "&H00FFFFFF",
+    "highlight_color": "&H0000F0FF",
+    "outline_color": "&H00000000",
+    "outline": 5,
+    "shadow": 1,
+    "alignment": 5,
+    "margin_v": 0,
+    "max_words": 3,
+    "max_caption_ms": 1200,
+    "glow_blur": 6,
+    "uppercase": true
+  },
+
+  "reddit_card": {
+    "enabled": true,
+    "subreddit": "r/AskReddit",
+    "width": 960,
+    "y_ratio": 0.30
+  },
+
+  "categories": {
+    "reddit": {
+      "story_theme": "reddit",
+      "background_dir": "G:/My Drive/Brainrot-videos/Background_videos",
+      "edge_voice": "en-US-AvaMultilingualNeural",
+      "edge_rate": "-4%",
+      "reddit_card": { "enabled": true, "subreddit": "r/AskReddit" },
+      "youtube_token": "token_acc1_ch1.json"
+    },
+    "simpsons": {
+      "story_theme": "simpsons",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_simpsons",
+      "edge_voice": "en-US-AndrewMultilingualNeural",
+      "edge_rate": "+6%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc1_ch2.json"
+    },
+    "cold": {
+      "story_theme": "cold",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_cold",
+      "edge_voice": "en-US-BrianMultilingualNeural",
+      "edge_rate": "+3%",
+      "edge_pitch": "-4Hz",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc2_ch1.json"
+    },
+    "relationship": {
+      "story_theme": "relationship",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_relationship",
+      "edge_voice": "en-US-AndrewMultilingualNeural",
+      "edge_rate": "-2%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc2_ch2.json"
+    },
+    "horror": {
+      "story_theme": "horror",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_horror",
+      "edge_voice": "en-US-GuyNeural",
+      "edge_rate": "-8%",
+      "edge_pitch": "-12Hz",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc3_ch1.json"
+    },
+    "anime": {
+      "story_theme": "anime",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_anime",
+      "edge_voice": "en-US-AvaMultilingualNeural",
+      "edge_rate": "+5%",
+      "edge_pitch": "+8Hz",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc3_ch2.json"
+    },
+    "betrayal": {
+      "story_theme": "betrayal",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_betrayal",
+      "edge_voice": "en-US-EmmaMultilingualNeural",
+      "edge_rate": "-2%",
+      "reddit_card": { "enabled": true, "subreddit": "r/relationship_advice" },
+      "youtube_token": "token_acc4_ch1.json"
+    },
+    "funny": {
+      "story_theme": "funny",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_funny",
+      "edge_voice": "en-US-BrianMultilingualNeural",
+      "edge_rate": "+7%",
+      "reddit_card": { "enabled": true, "subreddit": "r/funny" },
+      "youtube_token": "token_acc4_ch2.json"
+    },
+    "games": {
+      "story_theme": "games",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_games",
+      "edge_voice": "en-US-AndrewMultilingualNeural",
+      "edge_rate": "+8%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc5_ch1.json"
+    },
+    "space": {
+      "story_theme": "space",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_space",
+      "edge_voice": "en-US-BrianMultilingualNeural",
+      "edge_rate": "+2%",
+      "edge_pitch": "-3Hz",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc5_ch2.json"
+    }
+  },
+
+  "bulk": {
+    "daily_cap": 10,
+    "min_interval_sec": 300,
+    "max_interval_sec": 900
+  },
+
+  "games": {
+    "api_key": "${YOUTUBE_API_KEY}",
+    "regions": ["IN", "US"],
+    "channels": [
+      "@TechnoGamerzOfficial",
+      "@TotalGaming093",
+      "@Mythpat",
+      "@GamerFleet",
+      "@MrBeastGaming",
+      "@DanTDM"
+    ],
+    "per_channel": 2,
+    "max_results": 15
+  },
+
+  "llm": {
+    "enabled": true,
+    "base_url": "https://api.groq.com/openai/v1",
+    "api_key": "${GROQ_API_KEY}",
+    "model": "llama-3.3-70b-versatile",
+    "temperature": 1.05
+  }
+}

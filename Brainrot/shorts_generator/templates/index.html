@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ReelNexus - Upload, Schedule, Dominate</title>
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
+<style>
+/* CSS RESET & VARIABLES */
+:root {
+  --bg-darker: #06060a;
+  --bg-dark: #09090e;
+  --bg-card: #12121c;
+  --bg-card-hover: #171726;
+  --border-color: #1e1e30;
+  --border-color-hover: #33334d;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --text-accent: #a855f7;
+  --text-accent-hover: #c084fc;
+  --glow-purple: 0 0 20px rgba(168, 85, 247, 0.45);
+  --glow-purple-light: 0 0 12px rgba(168, 85, 247, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--bg-darker);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* CUSTOM SCROLLBAR */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-darker);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-accent);
+}
+
+/* NAVIGATION */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 64px;
+  background: rgba(9, 9, 14, 0.85);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(16px);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.logo svg {
+  color: var(--text-accent);
+  filter: drop-shadow(var(--glow-purple-light));
+}
+
+.logo span {
+  color: var(--text-accent);
+}
+
+/* SEARCH BAR */
+.search-container {
+  position: relative;
+  width: 320px;
+}
+
+.search-input {
+  width: 100%;
+  background: #11111a;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 8px 16px 8px 38px;
+  color: var(--text-main);
+  font-size: 13px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--text-accent);
+  box-shadow: var(--glow-purple-light);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-shortcut {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  background: var(--border-color);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.notification-bell {
+  position: relative;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.notification-bell:hover {
+  color: var(--text-main);
+}
+
+.bell-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  border: 1.5px solid var(--bg-darker);
+}
+
+.btn-upload-nav {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--glow-purple-light);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-downloader-nav {
+  background: #11111a;
+  color: #c4b5fd;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-downloader-nav:hover {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: var(--text-accent);
+  box-shadow: var(--glow-purple-light);
+  color: #fff;
+}
+
+
+.btn-upload-nav:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--glow-purple);
+  filter: brightness(1.1);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border: 2px solid var(--border-color);
+  transition: border-color 0.2s;
+}
+
+.avatar:hover {
+  border-color: var(--text-accent);
+}
+
+/* HERO HERO HERO */
+.hero-wrapper {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 24px;
+}
+
+.hero {
+  display: flex;
+  background: linear-gradient(150deg, #0d0a14 0%, #08080c 50%, #0d0a14 100%);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  min-height: 280px;
+}
+
+.hero-left {
+  flex: 1.2;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
+  position: relative;
+}
+
+.hero-anime-bg {
+  position: absolute;
+  right: 28%;
+  top: 0;
+  width: 38%;
+  height: 100%;
+  background: url('/static/hero_anime.png') no-repeat center center;
+  background-size: cover;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero h1 {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+
+.hero h1 span {
+  background: linear-gradient(to right, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 24px;
+  max-width: 380px;
+}
+
+.hero-features {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.feat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(18, 18, 28, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 10px 16px;
+  border-radius: 12px;
+  min-width: 120px;
+  backdrop-filter: blur(8px);
+}
+
+.feat-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #c4b5fd;
+}
+
+.feat-title svg {
+  color: var(--text-accent);
+}
+
+.feat-desc {
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+/* DRAG DROP ZONE */
+.hero-right {
+  flex: 0.9;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.dropzone {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed var(--border-color);
+  border-radius: 16px;
+  background: rgba(9, 9, 14, 0.6);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.dropzone:hover, .dropzone.dragover {
+  border-color: var(--text-accent);
+  background: rgba(26, 10, 40, 0.25);
+  box-shadow: inset 0 0 15px rgba(168, 85, 247, 0.1);
+}
+
+.dropzone-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--text-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  transition: transform 0.2s ease;
+}
+
+.dropzone:hover .dropzone-icon {
+  transform: translateY(-2px);
+}
+
+.dropzone h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dropzone p {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.btn-browse {
+  background: #231d30;
+  color: #c4b5fd;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 18px;
+  padding: 6px 16px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-browse:hover {
+  background: var(--text-accent);
+  color: #fff;
+  border-color: var(--text-accent);
+}
+
+/* YOUTUBE AND UPLOAD OPTIONS BAR */
+.opts-bar {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  padding: 0 24px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.yt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: #4ade80;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  accent-color: var(--text-accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.privacy-select-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.privacy-select {
+  background: #11111a;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.privacy-select:focus {
+  border-color: var(--text-accent);
+}
+
+/* SECTION CONTAINER */
+.section {
+  max-width: 1200px;
+  margin: 32px auto 0;
+  padding: 0 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.section-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.3px;
+}
+
+.section-header h2 svg {
+  color: var(--text-accent);
+}
+
+.view-all {
+  font-size: 12px;
+  color: var(--text-accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.view-all:hover {
+  color: var(--text-accent-hover);
+}
+
+/* NICHES SECTION */
+.niches-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .niches-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .niches-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.niche-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.niche-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--text-accent);
+  box-shadow: 0 10px 20px -10px rgba(168, 85, 247, 0.25);
+}
+
+.niche-image-wrapper {
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.niche-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.niche-card:hover .niche-image {
+  transform: scale(1.05);
+}
+
+.niche-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(9, 9, 14, 0.1), var(--bg-card));
+}
+
+.niche-emoji-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.niche-status-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid var(--text-accent);
+  color: #d8b4fe;
+  border-radius: 12px;
+  font-size: 9.5px;
+  padding: 1px 7px;
+  font-weight: 600;
+}
+
+.niche-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.niche-body h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.niche-body p {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 14px;
+  flex-grow: 1;
+}
+
+.niche-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-card-action {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 0;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+/* NICHE THEMED COLORS */
+.btn-up-reddit { background: rgba(255, 69, 0, 0.12); color: #ff5722; border: 1px solid rgba(255, 69, 0, 0.25); }
+.btn-up-reddit:hover { background: #ff4500; color: #fff; }
+
+.btn-up-simpsons { background: rgba(255, 204, 0, 0.12); color: #ffd700; border: 1px solid rgba(255, 204, 0, 0.25); }
+.btn-up-simpsons:hover { background: #ffcc00; color: #000; }
+
+.btn-up-cold { background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25); }
+.btn-up-cold:hover { background: #0ea5e9; color: #fff; }
+
+.btn-up-relationship { background: rgba(236, 72, 153, 0.12); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.25); }
+.btn-up-relationship:hover { background: #db2777; color: #fff; }
+
+.btn-up-horror { background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); }
+.btn-up-horror:hover { background: #dc2626; color: #fff; }
+
+.btn-up-anime { background: rgba(168, 85, 247, 0.12); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.25); }
+.btn-up-anime:hover { background: #8b5cf6; color: #fff; }
+
+.btn-generate-action {
+  background: #181826;
+  color: #c4b5fd;
+  border: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+.btn-generate-action:hover {
+  background: var(--text-accent);
+  color: #fff;
+  border-color: var(--text-accent);
+  box-shadow: var(--glow-purple-light);
+}
+
+/* RECENT UPLOADS */
+.uploads-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .uploads-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .uploads-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.upload-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.upload-card:hover {
+  border-color: var(--border-color-hover);
+  transform: translateY(-2px);
+}
+
+.upload-image-wrapper {
+  height: 96px;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-emoji {
+  font-size: 28px;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+}
+
+.upload-dur {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 4px;
+  font-size: 10.5px;
+  padding: 1px 5px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.upload-info {
+  padding: 12px;
+  position: relative;
+}
+
+.upload-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upload-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upload-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+/* STATUS COLORS MATCHING MOCKUP */
+.status-uploaded { color: #4ade80; }
+.status-processed { color: #a855f7; }
+.status-captioning { color: #facc15; }
+.status-thumbnail { color: #38bdf8; }
+.status-scheduled { color: #f97316; }
+.status-ready { color: #34d399; }
+
+.btn-more {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+}
+
+.btn-more:hover {
+  color: var(--text-main);
+}
+
+.empty-uploads {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 40px 0;
+  text-align: center;
+  grid-column: 1 / -1;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+}
+
+/* ANALYTICS SECTION */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 1024px) {
+  .analytics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .analytics-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.analytics-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.analytics-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.analytics-header svg {
+  color: var(--text-accent);
+}
+
+.analytics-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.analytics-stats {
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-value {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.analytics-change {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.change-up { color: #22c55e; }
+.change-down { color: #ef4444; }
+
+.sparkline-container {
+  width: 70px;
+  height: 35px;
+}
+
+.viral-score-container {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.viral-score-progress {
+  width: 100%;
+  height: 6px;
+  background: #1d1d2e;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.viral-score-bar {
+  height: 100%;
+  background: linear-gradient(to right, #a855f7, #ec4899);
+  border-radius: 3px;
+}
+
+/* MODAL OVERLAY AND POPUP */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 4, 8, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 200;
+  backdrop-filter: blur(10px);
+}
+
+.overlay.show {
+  display: flex;
+}
+
+.modal {
+  width: min(680px, 96vw);
+  background: #0e0e16;
+  border: 1px solid var(--border-color-hover);
+  border-radius: 20px;
+  padding: 28px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.8), var(--glow-purple-light);
+}
+
+.modal h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+
+.modal .sub {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.step .s-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  flex: none;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step.active {
+  color: var(--text-main);
+}
+
+.step.active .s-dot {
+  border-color: var(--text-accent);
+  box-shadow: var(--glow-purple-light);
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.step.done {
+  color: #22c55e;
+}
+
+.step.done .s-dot {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
+.step.done .s-dot::after {
+  content: "✓";
+  color: #000;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.log-box {
+  background: #06060a;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px;
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+  height: 140px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  margin-bottom: 18px;
+}
+
+.result-box {
+  display: none;
+  margin-top: 8px;
+}
+
+.result-box.show {
+  display: block;
+}
+
+.result-box video {
+  width: 100%;
+  border-radius: 12px;
+  background: #000;
+  max-height: 40vh;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.meta-box {
+  background: #11111a;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 13.5px;
+}
+
+.meta-box .k {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  margin-top: 12px;
+}
+
+.meta-box .k:first-child {
+  margin-top: 0;
+}
+
+.meta-box .tags {
+  color: var(--text-accent);
+  font-weight: 600;
+}
+
+.yt-link {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  font-size: 13.5px;
+  display: none;
+}
+
+.yt-link.show {
+  display: block;
+}
+
+.err-box {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  margin-top: 10px;
+  display: none;
+}
+
+.err-box.show {
+  display: block;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-close {
+  background: #181826;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-close:hover {
+  background: #232336;
+  border-color: var(--border-color-hover);
+}
+
+/* HIDDEN INPUT FOR FILE UPLOAD */
+#fileInput {
+  display: none;
+}
+
+/* NOTIFICATION POPUP */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #12121c;
+  border: 1px solid var(--text-accent);
+  border-radius: 12px;
+  padding: 14px 20px;
+  color: var(--text-main);
+  font-size: 13px;
+  box-shadow: var(--glow-purple-light);
+  display: none;
+  z-index: 300;
+  align-items: center;
+  gap: 10px;
+}
+
+/* BULK AUTO-PILOT PANEL */
+.bulk-panel {
+  max-width: 1200px;
+  margin: 26px auto 0;
+  padding: 0 24px;
+}
+.bulk-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 22px 24px;
+  box-shadow: var(--glow-purple-light);
+}
+.bulk-card h3 {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 16px; font-weight: 700; margin-bottom: 4px;
+}
+.bulk-card .bulk-sub { color: var(--text-muted); font-size: 12.5px; margin-bottom: 16px; }
+.bulk-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 8px; }
+.niche-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.niche-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 13px; border-radius: 999px; cursor: pointer;
+  background: var(--bg-darker); border: 1px solid var(--border-color);
+  color: var(--text-muted); font-size: 12.5px; font-weight: 600;
+  user-select: none; transition: all .15s;
+}
+.niche-chip:hover { border-color: var(--border-color-hover); color: var(--text-main); }
+.niche-chip.sel {
+  background: rgba(168,85,247,.16); border-color: var(--text-accent);
+  color: var(--text-accent-hover); box-shadow: var(--glow-purple-light);
+}
+.bulk-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px; }
+.bulk-field { display: flex; flex-direction: column; gap: 6px; }
+.bulk-count {
+  width: 92px; padding: 9px 12px; border-radius: 10px;
+  background: var(--bg-darker); border: 1px solid var(--border-color);
+  color: var(--text-main); font-size: 14px; font-weight: 600;
+}
+.bulk-count:focus { outline: none; border-color: var(--text-accent); }
+.bulk-hint { color: var(--text-muted); font-size: 11.5px; flex: 1 1 200px; }
+.btn-bulk {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 22px; border: none; border-radius: 11px; cursor: pointer;
+  background: linear-gradient(135deg, var(--text-accent), #7c3aed);
+  color: #fff; font-size: 13.5px; font-weight: 700;
+  box-shadow: var(--glow-purple); transition: transform .12s, opacity .12s;
+}
+.btn-bulk:hover { transform: translateY(-1px); }
+.btn-bulk:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="logo">
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+      Reel<span>Nexus</span>
+    </div>
+  </div>
+  <div class="search-container">
+    <svg class="search-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" class="search-input" placeholder="Search anything..."/>
+    <span class="search-shortcut">⌘ K</span>
+  </div>
+  <div class="nav-right">
+    {% if yt_ready %}
+    <div class="yt-pill">
+      <span class="dot"></span> YouTube connected
+    </div>
+    {% endif %}
+    <a href="/downloader" class="btn-downloader-nav">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Downloader
+    </a>
+    <a href="/channels" class="btn-downloader-nav" style="margin-left:10px;">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Channels
+    </a>
+    <div class="notification-bell">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="bell-badge"></span>
+    </div>
+    <button class="btn-upload-nav" onclick="document.getElementById('fileInput').click()">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload Video
+    </button>
+    <div class="avatar">A</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-wrapper">
+  <div class="hero">
+    <div class="hero-anime-bg"></div>
+    <div class="hero-left">
+      <h1>Upload. Schedule. <br/><span>Dominate.</span></h1>
+      <p>Upload once. AI does the rest. Grow everywhere.</p>
+      <div class="hero-features">
+        <div class="feat">
+          <span class="feat-title">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            One Click
+          </span>
+          <span class="feat-desc">Upload videos in bulk</span>
+        </div>
+        <div class="feat">
+          <span class="feat-title">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+            AI Automation
+          </span>
+          <span class="feat-desc">Captions, titles, metadata</span>
+        </div>
+        <div class="feat">
+          <span class="feat-title">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+            Post Everywhere
+          </span>
+          <span class="feat-desc">Multiple niches, one panel</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- DRAG DROP -->
+    <div class="hero-right">
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <h3>Drag & drop your videos here</h3>
+        <p>or</p>
+        <button class="btn-browse">Browse Files</button>
+        <input type="file" id="fileInput" accept=".mp4,.mov,.mkv"/>
+        <p style="margin-top: 10px; margin-bottom: 0; font-size: 9.5px; opacity: 0.6;">Support: MP4, MOV, MKV (Max 10GB)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTS BAR -->
+<div class="opts-bar">
+  <label class="checkbox-label">
+    <input type="checkbox" id="optUpload">
+    Upload to YouTube after generating (uncheck to save locally only)
+  </label>
+  <div class="privacy-select-label">
+    Privacy:
+    <select id="optPrivacy" class="privacy-select">
+      <option value="public" selected>Public</option>
+      <option value="unlisted">Unlisted</option>
+      <option value="private">Private</option>
+    </select>
+  </div>
+</div>
+
+<!-- BULK AUTO-PILOT -->
+<div class="bulk-panel">
+  <div class="bulk-card">
+    <h3>
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Bulk Auto-Pilot
+    </h3>
+    <div class="bulk-sub">Generate a batch across one or more niches. Uploads are spaced with randomized 5–15&nbsp;min gaps (max 10/day) so YouTube doesn't flag the channel.</div>
+
+    <div class="bulk-label">Pick niches to mix</div>
+    <div class="niche-chips" id="bulkNiches">
+      {% for c in categories %}
+      <span class="niche-chip" data-id="{{ c.id }}" onclick="toggleNiche(this)">{{ c.icon }} {{ c.name }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="bulk-controls">
+      <div class="bulk-field">
+        <span class="bulk-label" style="margin:0">How many (1–10)</span>
+        <input type="number" id="bulkCount" class="bulk-count" min="1" max="10" value="3"/>
+      </div>
+      <button class="btn-bulk" id="bulkBtn" onclick="startBulk()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Start Bulk Batch
+      </button>
+      <div class="bulk-hint">Videos cycle round-robin through the niches you select. Uses the “Upload to YouTube” &amp; Privacy options above.</div>
+    </div>
+  </div>
+</div>
+
+<!-- NICHES -->
+<div class="section">
+  <div class="section-header">
+    <h2>
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Your Niches
+    </h2>
+    <span class="view-all">View All Niches ›</span>
+  </div>
+  <div class="niches-grid">
+    {% for c in categories %}
+    <div class="niche-card" data-id="{{ c.id }}">
+      <div class="niche-image-wrapper">
+        <img src="/static/niche_{{ c.id }}.png" class="niche-image" alt="{{ c.name }} Thumbnail" onerror="this.style.display='none'; this.parentElement.style.background='{{ c.bg }}'"/>
+        <div class="niche-image-overlay" style="background: {{ c.overlay }}"></div>
+        <span class="niche-emoji-badge">{{ c.icon }}</span>
+        <span class="niche-status-badge">Ready</span>
+      </div>
+      <div class="niche-body">
+        <h3>{{ c.name }}</h3>
+        <p>{{ c.desc }}</p>
+        <div class="niche-actions">
+          <button class="btn-card-action btn-up-{{ c.id }}" onclick="event.stopPropagation();startGen('{{ c.id }}','{{ c.name }}')" style="width: 100%;">
+            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+            Generate Video
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Spacer to keep layout breathing room -->
+<div style="height: 40px;"></div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast">
+  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" style="color: #4ade80;"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Video uploaded successfully!</span>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="mTitle">Generating...</h2>
+    <div class="sub" id="mSub">This usually takes 1–2 minutes.</div>
+    <div class="steps" id="steps">
+      <div class="step" data-k="story"><span class="s-dot"></span> Writing the story</div>
+      <div class="step" data-k="voice"><span class="s-dot"></span> Narrating</div>
+      <div class="step" data-k="captions"><span class="s-dot"></span> Karaoke captions</div>
+      <div class="step" data-k="card"><span class="s-dot"></span> Reddit card</div>
+      <div class="step" data-k="render"><span class="s-dot"></span> Rendering video</div>
+      <div class="step" data-k="upload"><span class="s-dot"></span> Uploading to YouTube</div>
+    </div>
+    <div class="log-box" id="log"></div>
+    <div class="err-box" id="err"></div>
+    <div class="result-box" id="result">
+      <video id="vid" controls></video>
+      <div class="meta-box" id="meta"></div>
+      <div class="yt-link" id="yturl"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-close" id="closeBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STAGE_ORDER = ['story', 'voice', 'captions', 'card', 'render', 'upload', 'done'];
+let poll = null;
+
+// STAGES PROGRESS HANDLING
+function setStage(s) {
+  const idx = STAGE_ORDER.indexOf(s);
+  document.querySelectorAll('.step').forEach(el => {
+    const ki = STAGE_ORDER.indexOf(el.dataset.k);
+    el.classList.remove('active', 'done');
+    if (ki < idx) el.classList.add('done');
+    else if (ki === idx) el.classList.add('active');
+  });
+}
+
+function openModal(name, isBulk) {
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('mTitle').textContent = name;
+  document.getElementById('mSub').textContent = isBulk
+    ? 'Batch starting… videos are spaced 5–15 min apart.'
+    : 'This usually takes 1–2 minutes.';
+  document.getElementById('log').textContent = '';
+  document.getElementById('err').classList.remove('show');
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('yturl').classList.remove('show');
+  // the per-stage checklist only makes sense for a single video
+  document.getElementById('steps').style.display = isBulk ? 'none' : '';
+  document.querySelectorAll('.step').forEach(el => el.classList.remove('active', 'done'));
+}
+
+document.getElementById('closeBtn').onclick = () => {
+  document.getElementById('overlay').classList.remove('show');
+  if (poll) clearInterval(poll);
+};
+
+// FETCH START GENERATION
+async function startGen(category, name) {
+  openModal(name);
+  const upload = document.getElementById('optUpload').checked;
+  const privacy = document.getElementById('optPrivacy').value;
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ category, upload, privacy })
+  });
+  const data = await res.json();
+  if (data.error) {
+    showErr(data.error);
+    return;
+  }
+  pollJob(data.job_id);
+}
+
+// BULK BATCH
+function toggleNiche(el) {
+  el.classList.toggle('sel');
+}
+
+async function startBulk() {
+  const niches = Array.from(document.querySelectorAll('#bulkNiches .niche-chip.sel'))
+    .map(el => el.dataset.id);
+  if (!niches.length) {
+    showToast('Pick at least one niche for the batch.');
+    return;
+  }
+  const count = Math.max(1, Math.min(10, parseInt(document.getElementById('bulkCount').value || '1', 10)));
+  const upload = document.getElementById('optUpload').checked;
+  const privacy = document.getElementById('optPrivacy').value;
+
+  openModal('Bulk batch · ' + count + ' video' + (count > 1 ? 's' : ''), true);
+  const btn = document.getElementById('bulkBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categories: niches, count, upload, privacy })
+    });
+    const data = await res.json();
+    if (data.error) { showErr(data.error); btn.disabled = false; return; }
+    pollJob(data.job_id, data.total || count);
+  } catch (e) {
+    showErr(e.message); btn.disabled = false;
+  }
+}
+
+function pollJob(id, bulkTotal) {
+  const isBulk = !!bulkTotal;
+  let shown = 0;
+  poll = setInterval(async () => {
+    const r = await fetch('/api/status/' + id);
+    const j = await r.json();
+    const log = document.getElementById('log');
+    log.textContent = (j.log || []).join('\n');
+    log.scrollTop = log.scrollHeight;
+    if (j.stage && !isBulk) setStage(j.stage);
+
+    if (isBulk) {
+      const results = j.results || [];
+      for (let k = shown; k < results.length; k++) addRecentCard(results[k]);
+      shown = results.length;
+      document.getElementById('mSub').textContent =
+        'Done ' + (j.completed || 0) + ' / ' + bulkTotal + ' · ' + (j.stage || j.status);
+    }
+
+    if (j.status === 'done') {
+      clearInterval(poll);
+      if (isBulk) {
+        document.getElementById('mSub').textContent = '✅ Batch complete · ' + (j.completed || 0) + ' video(s)';
+        document.getElementById('bulkBtn').disabled = false;
+      } else {
+        setStage('done');
+        document.querySelectorAll('.step').forEach(el => el.classList.add('done'));
+        showResult(j.result);
+        addRecentCard(j.result);
+      }
+    } else if (j.status === 'error') {
+      clearInterval(poll);
+      showErr(j.error || 'Something went wrong.');
+      document.getElementById('bulkBtn').disabled = false;
+    }
+  }, 900);
+}
+
+function showResult(r) {
+  document.getElementById('mSub').textContent = 'Done! ' + r.duration + 's';
+  const res = document.getElementById('result');
+  res.classList.add('show');
+  document.getElementById('vid').src = '/output/' + encodeURIComponent(r.file);
+  const md = r.meta || {};
+  document.getElementById('meta').innerHTML =
+    '<div class="k">Caption / Title</div><div>' + esc(md.title || '') + '</div>' +
+    '<div class="k">Hashtags</div><div class="tags">' + esc((md.tags || []).map(t => '#' + t).join(' ')) + '</div>';
+  const yu = document.getElementById('yturl');
+  if (r.youtube) {
+    yu.classList.add('show');
+    yu.innerHTML = '✅ Uploaded: <a href="' + r.youtube.url + '" target="_blank" style="color:#a855f7">' + r.youtube.url + '</a>';
+  } else if (r.upload_error) {
+    yu.classList.add('show');
+    yu.innerHTML = '<span style="color:#f87171">⚠ ' + esc(r.upload_error) + '</span>';
+  }
+}
+
+function showErr(msg) {
+  const e = document.getElementById('err');
+  e.classList.add('show');
+  e.textContent = '⚠ ' + msg;
+}
+
+function addRecentCard(r) {
+  const grid = document.getElementById('recentUploads');
+  const empty = grid.querySelector('.empty-uploads');
+  if (empty) empty.remove();
+  
+  const icons = {'reddit':'👽','relationship':'💔','cold':'🧊','horror':'👻','simpsons':'🍩','anime':'🌸','betrayal':'🔪','funny':'😂','games':'🎮'};
+  const bgs = {'reddit':'#1a0a0a','relationship':'#0a0a1a','cold':'#0a1020','horror':'#0d0a0a','simpsons':'#1a1400','anime':'#0d0a1a','betrayal':'#16060a','funny':'#161200','games':'#05140d'};
+  const icon = icons[r.category] || '🎬';
+  const bg = bgs[r.category] || '#111118';
+  const name = (r.file || '').replace('.mp4','').replace(/_/g,' ').slice(0, 28);
+  const dur = r.duration ? Math.floor(r.duration/60) + ':' + (r.duration%60<10?'0':'') + Math.floor(r.duration%60) : '—';
+  
+  const card = document.createElement('div');
+  card.className = 'upload-card';
+  card.innerHTML = `
+    <div class="upload-image-wrapper" style="background: linear-gradient(135deg, ${bg} 0%, #0d0d16 100%)">
+      <span class="upload-emoji">${icon}</span>
+      <span class="upload-dur">${dur}</span>
+    </div>
+    <div class="upload-info">
+      <h4 class="upload-title">${esc(name)}</h4>
+      <div class="upload-meta">
+        <span class="upload-status status-uploaded">● Uploaded</span>
+        <button class="btn-more">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        </button>
+      </div>
+    </div>`;
+  grid.prepend(card);
+}
+
+function esc(s) {
+  return (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+// TOAST NOTIFICATIONS
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.style.display = 'flex';
+  setTimeout(() => {
+    t.style.display = 'none';
+  }, 4000);
+}
+
+// FILE UPLOAD AND DRAG-DROP
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+// Trigger browse file
+dropzone.addEventListener('click', (e) => {
+  if (e.target.tagName !== 'BUTTON' && e.target.closest('button') === null) {
+    fileInput.click();
+  }
+});
+
+// Drag-drop events
+['dragenter', 'dragover'].forEach(eventName => {
+  dropzone.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  }, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+  dropzone.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+  }, false);
+});
+
+dropzone.addEventListener('drop', (e) => {
+  const dt = e.dataTransfer;
+  const files = dt.files;
+  if (files.length) {
+    handleFileUpload(files[0]);
+  }
+});
+
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) {
+    handleFileUpload(fileInput.files[0]);
+  }
+});
+
+// File upload handler
+async function handleFileUpload(file) {
+  showToast("Uploading " + file.name + "...");
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast("Success! Video uploaded.");
+      // Inject uploaded video representation as a recent upload card
+      const grid = document.getElementById('recentUploads');
+      const empty = grid.querySelector('.empty-uploads');
+      if (empty) empty.remove();
+      
+      const card = document.createElement('div');
+      card.className = 'upload-card';
+      card.innerHTML = `
+        <div class="upload-image-wrapper" style="background: linear-gradient(135deg, #1e1b4b 0%, #0d0d16 100%)">
+          <span class="upload-emoji">🎬</span>
+          <span class="upload-dur">Uploaded</span>
+        </div>
+        <div class="upload-info">
+          <h4 class="upload-title">${esc(file.name.replace(/\.[^/.]+$/, ""))}</h4>
+          <div class="upload-meta">
+            <span class="upload-status status-uploaded">● Uploaded</span>
+            <button class="btn-more">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            </button>
+          </div>
+        </div>`;
+      grid.prepend(card);
+    } else {
+      showToast("Error: " + (data.error || "Upload failed."));
+    }
+  } catch (err) {
+    showToast("Error uploading file: " + err.message);
+  }
+}
+</script>
+</body>
+</html>

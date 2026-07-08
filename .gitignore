@@ -1,0 +1,54 @@
+# Python Virtual Environment and caches
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node/npm dependency files
+node_modules/
+
+# Environment variables and sensitive OAuth credentials (CRITICAL!)
+.env
+*.env
+**/.env
+**/client_secret*.json
+**/token*.json
+**/cookies.txt
+**/*.json.token
+
+# IDE and Project Tooling
+.vscode/
+.idea/
+.claude/
+.obsidian/
+.playwright-mcp/
+.pytest_cache/
+.DS_Store
+Thumbs.db
+
+# Executables and Large Binaries
+**/ffmpeg.exe
+**/*.exe
+**/*.bin
+**/*.part
+
+# Video production output files and local background caches
+**/output/
+**/_work/
+**/games_seen.json
+**/*.mp4
+**/*.webm
+
+# Keep empty background directories but ignore all video files inside them
+!Brainrot/Bg_anime/.gitkeep
+!Brainrot/Bg_betrayal/.gitkeep
+!Brainrot/Bg_cold/.gitkeep
+!Brainrot/Bg_funny/.gitkeep
+!Brainrot/Bg_games/.gitkeep
+!Brainrot/Bg_horror/.gitkeep
+!Brainrot/Bg_relationship/.gitkeep
+!Brainrot/Bg_simpsons/.gitkeep
+
+# Exclude specific files
+test_range_output_1080p.mp4.part

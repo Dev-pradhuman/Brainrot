@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ReelNexus - Channels Dashboard</title>
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
+<style>
+/* CSS RESET & VARIABLES */
+:root {
+  --bg-darker: #06060a;
+  --bg-dark: #09090e;
+  --bg-card: #12121c;
+  --bg-card-hover: #171726;
+  --border-color: #1e1e30;
+  --border-color-hover: #33334d;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --text-accent: #a855f7;
+  --text-accent-hover: #c084fc;
+  --glow-purple: 0 0 20px rgba(168, 85, 247, 0.45);
+  --glow-purple-light: 0 0 12px rgba(168, 85, 247, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--bg-darker);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* CUSTOM SCROLLBAR */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-darker);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-accent);
+}
+
+/* NAVIGATION */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 64px;
+  background: rgba(9, 9, 14, 0.85);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(16px);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  cursor: pointer;
+}
+
+.logo svg {
+  color: var(--text-accent);
+  filter: drop-shadow(var(--glow-purple-light));
+}
+
+.logo span {
+  color: var(--text-accent);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.yt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: #4ade80;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.btn-back-nav {
+  background: #11111a;
+  color: #c4b5fd;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-back-nav:hover {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: var(--text-accent);
+  box-shadow: var(--glow-purple-light);
+  color: #fff;
+}
+
+/* SECTION CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: 32px auto 60px;
+  padding: 0 24px;
+}
+
+.header-block {
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-text h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.header-text h1 span {
+  background: linear-gradient(to right, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-text p {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.btn-refresh {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--glow-purple-light);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-refresh:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--glow-purple);
+  filter: brightness(1.1);
+}
+
+/* CHANNELS GRID */
+.channels-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 960px) {
+  .channels-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.channel-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  position: relative;
+}
+
+.channel-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-color-hover);
+}
+
+.channel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.channel-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.channel-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  object-fit: cover;
+}
+
+.channel-meta h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.channel-meta p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.token-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #c4b5fd;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* STATS ROW */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-box {
+  background: rgba(9, 9, 14, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* RECENT VIDEOS */
+.recent-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.recent-title svg {
+  color: var(--text-accent);
+}
+
+.videos-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.video-thumb-card {
+  background: rgba(9, 9, 14, 0.2);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-thumb-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background-size: cover;
+  background-position: center;
+}
+
+.video-title-overlay {
+  padding: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(18, 18, 28, 0.4);
+}
+
+.video-stats-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  font-size: 10px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-color);
+}
+
+.video-stat {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ERROR STATE CARD */
+.error-card {
+  background: rgba(239, 68, 68, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.error-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-details h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #f87171;
+}
+
+.error-details p {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.setup-info-card {
+  background: rgba(18, 18, 28, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 32px;
+  backdrop-filter: blur(10px);
+}
+
+.setup-info-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #c4b5fd;
+}
+
+.setup-info-card ol {
+  padding-left: 20px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.setup-info-card li {
+  margin-bottom: 8px;
+}
+
+.setup-info-card code {
+  background: rgba(0,0,0,0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  color: #f3f4f6;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="logo" onclick="window.location.href='/'">
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+      Reel<span>Nexus</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    {% if yt_ready %}
+    <div class="yt-pill">
+      <span class="dot"></span> YouTube connected
+    </div>
+    {% endif %}
+    <a href="/downloader" class="btn-back-nav" style="margin-right:10px;">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Downloader
+    </a>
+    <a href="/" class="btn-back-nav">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Dashboard
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+  
+  <div class="header-block">
+    <div class="header-text">
+      <h1>Channels <span>Analytics</span></h1>
+      <p>Unified statistics dashboard for all your authorized YouTube channels.</p>
+    </div>
+    <button class="btn-refresh" onclick="window.location.reload()">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 11-.57-8.38l5.67-5.67"/></svg>
+      Refresh Stats
+    </button>
+  </div>
+
+  <div class="channels-grid">
+    {% for chan in channels %}
+      {% if chan.error %}
+        <!-- ERROR CARD FOR UNCONFIGURED OR EXPIRED TOKENS -->
+        <div class="error-card">
+          <div class="error-icon">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="error-details">
+            <h3>Authentication Error</h3>
+            <p>Token file <code>{{ chan.token_file }}</code> failed to connect to YouTube API.</p>
+            <p style="font-size: 11px; margin-top: 4px; color: #f87171;">Reason: {{ chan.error }}</p>
+          </div>
+        </div>
+      {% else %}
+        <!-- HEALTHY CHANNEL CARD -->
+        <div class="channel-card">
+          <div class="channel-header">
+            <div class="channel-profile">
+              <img class="channel-avatar" src="{{ chan.thumbnail }}" alt="Avatar">
+              <div class="channel-meta">
+                <h2>{{ chan.title }}</h2>
+                <p>{{ chan.custom_url }}</p>
+              </div>
+            </div>
+            <div class="token-badge">{{ chan.token_file }}</div>
+          </div>
+          
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-val">{{ "{:,}".format(chan.subscribers) }}</div>
+              <div class="stat-label">Subscribers</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val">{{ "{:,}".format(chan.views) }}</div>
+              <div class="stat-label">Total Views</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val">{{ chan.video_count }}</div>
+              <div class="stat-label">Videos</div>
+            </div>
+          </div>
+
+          <div class="recent-title">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            Recent Videos
+          </div>
+
+          <div class="videos-row">
+            {% if chan.recent_videos %}
+              {% for vid in chan.recent_videos %}
+                <div class="video-thumb-card" onclick="window.open('https://youtu.be/{{ vid.id }}', '_blank')" style="cursor:pointer;">
+                  <div class="video-thumb-wrapper" style="background-image: url('{{ vid.thumbnail }}')"></div>
+                  <div class="video-title-overlay" title="{{ vid.title }}">{{ vid.title }}</div>
+                  <div class="video-stats-overlay">
+                    <div class="video-stat">👁️ {{ "{:,}".format(vid.views) if vid.views > 999 else vid.views }}</div>
+                    <div class="video-stat">👍 {{ vid.likes }}</div>
+                    <div class="video-stat">💬 {{ vid.comments }}</div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div style="grid-column: 1 / -1; text-align: center; font-size: 12px; color: var(--text-muted); padding: 20px 0;">
+                No videos uploaded yet.
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% else %}
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0; background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: 20px;">
+        <p style="color: var(--text-muted); margin-bottom: 8px;">No authorized YouTube channels found.</p>
+        <p style="font-size: 12px;">Add a <code>token.json</code> or other token file in your project folder to see statistics.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- HOW TO ADD CHANNELS INFO -->
+  <div class="setup-info-card">
+    <h3>💡 How to add more channels to this dashboard:</h3>
+    <ol>
+      <li>Open your terminal and run:
+        <code>.venv\Scripts\python.exe Brainrot\shorts_generator\youtube_upload.py token_niche_name.json</code>
+      </li>
+      <li>Sign in using the Google Account of the new channel, and select that specific Brand Channel during the authorization flow.</li>
+      <li>This creates a new <code>token_niche_name.json</code> credential.</li>
+      <li>Refresh this page, and the new channel's live stats, subscriber count, and recent uploads will appear automatically!</li>
+    </ol>
+  </div>
+
+</div>
+
+</body>
+</html>
