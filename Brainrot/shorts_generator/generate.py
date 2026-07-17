@@ -206,28 +206,26 @@ def generate_script(cfg, category, progress=None):
         progress("script", f"Writing a {category} script with {llm.get('model')}...")
 
     sys_prompt = (
-        "You are a master scriptwriter specialized in 1M+ views YouTube Shorts and TikToks. "
-        "You understand that the first 3 seconds are everything. You write spoken-word voiceovers "
-        "that start immediately without introduction. You use raw, high-tension conversational style, "
-        "short punchy sentences, and open strong curiosity loops. "
+        "You are an elite, top-1% viral short-form scriptwriter for TikTok and YouTube Shorts, generating videos that consistently hit 10M+ views. "
+        "Your mastery lies in extreme retention: flawless pacing, relentless curiosity loops, psychological hooks, and zero fluff. "
+        "You write exclusively in a highly engaging, raw, spoken-word format meant to be read by an AI voice. "
         "CRITICAL RULES: \n"
-        "- NEVER start with introductory phrases like 'I always thought', 'It started like any other day', 'I never told anyone', 'so basically', or 'let me explain'.\n"
-        "- NEVER use cliches, emojis, hashtags, markdown, stage directions, or narration guides.\n"
-        "- Ensure each story has a unique, specific, and creative plot setup to prevent scripts from sounding similar.\n"
-        "- Output ONLY valid JSON."
+        "1. NO INTROS: Start directly in the middle of the action or with a wildly controversial/shocking statement. No 'Hey guys', no 'Have you ever', no 'Let me explain', no 'I never thought'.\n"
+        "2. RETENTION DRIVEN: Every single sentence must raise a new question or escalate the stakes. If a sentence doesn't advance the plot or drop a bombshell, cut it.\n"
+        "3. PACING: Use short, punchy sentences. Vary sentence length for rhythm. Use active voice.\n"
+        "4. NO FORMATTING: No markdown, no emojis, no hashtags, no stage directions like [Pause] or [Sigh]. Just pure text for the TTS engine.\n"
+        "5. Output EXACTLY valid JSON and nothing else."
     )
     user_prompt = (
-        f"Write a viral short-form script about {theme}.\n\n"
+        f"Write a viral short-form script about: {theme}.\n\n"
         "Requirements:\n"
-        "- HOOK (first 3-5 seconds, 1 sentence): Start directly with a shocking, highly specific statement or "
-        "action that disrupts the scroll. The viewer must feel an immediate urge to find out what happens next.\n"
-        f"- SCRIPT: starts with the exact hook, followed by ~{target} words of continuous, spoken-word voiceover. "
-        "Write in highly conversational, short, active sentences. Build tension, keep the pacing fast, and "
-        "finish with a punchy twist, ironic payoff, or unsettling cliffhanger.\n"
-        "- TITLE: high-CTR, highly engaging title under 70 characters. Do not use all caps or emojis."
+        "- HOOK (first 3-5 seconds, 1 sentence): A scroll-stopping, aggressively hooky first sentence. It must immediately disrupt the viewer's brain and make scrolling impossible.\n"
+        f"- SCRIPT: Starts with the EXACT hook, followed by ~{target} words of pure, high-octane storytelling or commentary. "
+        "Keep the tension constantly rising. Deliver a massive payoff, plot twist, or disturbing realization at the very end. The final sentence should loop perfectly back into the hook if possible, or end on a mic-drop.\n"
+        "- TITLE: A high-CTR, psychological title under 60 characters. Make it irresistible to click. No all-caps, no emojis."
         + (NONFICTION_GUARD if category in NONFICTION_THEMES else "")
         + "\n\n"
-        'Respond as JSON: {"title": "...", "hook": "...", "script": "..."}'
+        'Respond STRICTLY as JSON: {"title": "...", "hook": "...", "script": "..."}'
     )
 
     try:
@@ -354,6 +352,7 @@ def generate_trending_script(cfg, category, progress=None):
 
     sys_prompt = (
         f"You are {flavor['persona']} The first 5 seconds decide everything. "
+        "You are obsessed with high retention, fast pacing, and keeping the viewer hooked. "
         "Never invent specific facts that aren't supported by the video info given. "
         "No emojis, hashtags, or markdown. Output ONLY valid JSON."
     )
@@ -365,12 +364,12 @@ def generate_trending_script(cfg, category, progress=None):
         f"Tags: {', '.join(info['tags'][:10])}\n"
         f"Description: {info['description'][:600]}\n\n"
         "Requirements:\n"
-        f"- HOOK (first ~5 seconds): {flavor['hook']}.\n"
-        f"- SCRIPT: starts with the hook, ~{target} words, hyped and conversational, "
-        f"builds excitement, and {flavor['close']}. Base everything on the "
+        f"- HOOK (first ~5 seconds): {flavor['hook']}. Make it aggressive and impossible to scroll past.\n"
+        f"- SCRIPT: starts with the hook, ~{target} words, hyped and conversational. "
+        "Build intense excitement, escalate the stakes, and finish strong. Base everything on the "
         "title/description above; don't fabricate specific events.\n"
         f"- TITLE: {flavor['title_rule']}.\n\n"
-        'Respond as JSON: {"title": "...", "hook": "...", "script": "..."}'
+        'Respond STRICTLY as JSON: {"title": "...", "hook": "...", "script": "..."}'
     )
 
     try:

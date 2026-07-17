@@ -23,17 +23,17 @@
   "caption": {
     "font": "Anton",
     "fonts_dir": "fonts",
-    "font_size": 96,
+    "font_size": 110,
     "bold": 0,
     "primary_color": "&H00FFFFFF",
-    "highlight_color": "&H0000F0FF",
+    "highlight_color": "&H0000D0FF",
     "outline_color": "&H00000000",
-    "outline": 5,
-    "shadow": 1,
+    "outline": 6,
+    "shadow": 0,
     "alignment": 5,
     "margin_v": 0,
-    "max_words": 3,
-    "max_caption_ms": 1200,
+    "max_words": 2,
+    "max_caption_ms": 1000,
     "glow_blur": 6,
     "uppercase": true
   },
@@ -161,6 +161,39 @@
       "edge_rate": "+5%",
       "reddit_card": { "enabled": false },
       "youtube_token": "token_acc7_ch2.json"
+    },
+    "colourgame": {
+      "story_theme": "colourgame",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_colourgame",
+      "edge_voice": "en-US-BrianMultilingualNeural",
+      "edge_rate": "+6%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc8_ch1.json"
+    },
+    "squidgame": {
+      "story_theme": "squidgame",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_squidgame",
+      "edge_voice": "en-US-GuyNeural",
+      "edge_rate": "-4%",
+      "edge_pitch": "-8Hz",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc8_ch2.json"
+    },
+    "movies": {
+      "story_theme": "movies",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_movies",
+      "edge_voice": "en-US-AvaMultilingualNeural",
+      "edge_rate": "+5%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc9_ch1.json"
+    },
+    "gta6": {
+      "story_theme": "gta6",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_gta6",
+      "edge_voice": "en-US-AndrewMultilingualNeural",
+      "edge_rate": "+8%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc9_ch2.json"
     }
   },
 
