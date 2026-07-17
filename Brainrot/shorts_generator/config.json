@@ -129,6 +129,38 @@
       "edge_pitch": "-3Hz",
       "reddit_card": { "enabled": false },
       "youtube_token": "token_acc5_ch2.json"
+    },
+    "fifa": {
+      "story_theme": "fifa",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_fifa",
+      "edge_voice": "en-US-AndrewMultilingualNeural",
+      "edge_rate": "+8%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc6_ch1.json"
+    },
+    "gaming": {
+      "story_theme": "gaming",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_gaming",
+      "edge_voice": "en-US-BrianMultilingualNeural",
+      "edge_rate": "+6%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc6_ch2.json"
+    },
+    "aitools": {
+      "story_theme": "aitools",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_aitools",
+      "edge_voice": "en-US-AndrewMultilingualNeural",
+      "edge_rate": "+2%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc7_ch1.json"
+    },
+    "trending": {
+      "story_theme": "trending",
+      "background_dir": "G:/My Drive/Brainrot-videos/Bg_trending",
+      "edge_voice": "en-US-AvaMultilingualNeural",
+      "edge_rate": "+5%",
+      "reddit_card": { "enabled": false },
+      "youtube_token": "token_acc7_ch2.json"
     }
   },
 
@@ -138,19 +170,55 @@
     "max_interval_sec": 900
   },
 
+  "schedule": {
+    "enabled": false,
+    "timezone": "America/New_York",
+    "per_day": 1,
+    "best_days_only": false,
+    "_comment": "When enabled, uploads use YouTube's publishAt to go live in the target country's Shorts prime time (evenings; Fri/Sat/Thu strongest) instead of publishing immediately. timezone = your target AUDIENCE's zone, not your own. per_day = how many Shorts to schedule per day. best_days_only = restrict to Fri/Sat/Thu."
+  },
+
+  "import": {
+    "transcription_engine": "deepgram",
+    "deepgram": {
+      "api_key": "${DEEPGRAM_API_KEY}",
+      "model": "nova-2"
+    },
+    "whisper": {
+      "model_size": "base",
+      "device": "cpu",
+      "compute_type": "int8"
+    },
+    "min_clip_sec": 30,
+    "max_clip_sec": 90,
+    "max_candidates": 10,
+    "burn_captions": true,
+    "metadata_category": "reddit"
+  },
+
   "games": {
     "api_key": "${YOUTUBE_API_KEY}",
-    "regions": ["IN", "US"],
+    "category_id": "20",
+    "regions": ["US"],
     "channels": [
-      "@TechnoGamerzOfficial",
-      "@TotalGaming093",
-      "@Mythpat",
-      "@GamerFleet",
       "@MrBeastGaming",
-      "@DanTDM"
+      "@DanTDM",
+      "@Jacksepticeye",
+      "@Markiplier",
+      "@Dream",
+      "@Ninja"
     ],
     "per_channel": 2,
     "max_results": 15
+  },
+
+  "trending": {
+    "api_key": "${YOUTUBE_API_KEY}",
+    "category_id": null,
+    "regions": ["US"],
+    "channels": [],
+    "per_channel": 0,
+    "max_results": 25
   },
 
   "llm": {

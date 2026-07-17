@@ -8,7 +8,10 @@ from flask import Flask, jsonify, render_template, request, send_from_directory
 
 import bulk as bulk_mod
 import generate as gen
+import import_clip as imp
 import metadata as meta_mod
+import schedule as sched
+import video as video_mod
 import youtube_upload as yt
 from yt_dlp.utils import download_range_func
 import static_ffmpeg
@@ -57,6 +60,30 @@ CATEGORIES = [
     {"id": "space",        "name": "Space Mysteries",     "icon": "🚀", "ready": True,
      "desc": "Terrifying cosmic facts and space anomalies.",
      "bg": "linear-gradient(135deg,#050a18,#0a122d)", "overlay": "linear-gradient(135deg,rgba(56,189,248,.25),rgba(30,58,138,.15))"},
+    {"id": "fifa",         "name": "FIFA / EA FC",        "icon": "⚽", "ready": True,
+     "desc": "Ultimate Team drama, meta tips and pack luck.",
+     "bg": "linear-gradient(135deg,#03140a,#062615)", "overlay": "linear-gradient(135deg,rgba(16,185,129,.28),rgba(6,95,70,.16))"},
+    {"id": "gaming",       "name": "Gaming Stories",      "icon": "🕹️", "ready": True,
+     "desc": "Gaming drama, dev secrets and legends.",
+     "bg": "linear-gradient(135deg,#0a0518,#140a2d)", "overlay": "linear-gradient(135deg,rgba(139,92,246,.26),rgba(76,29,149,.16))"},
+    {"id": "aitools",      "name": "AI Dev Tools",        "icon": "🤖", "ready": True,
+     "desc": "Claude Code, MCP, Codex & local models.",
+     "bg": "linear-gradient(135deg,#04121a,#07202d)", "overlay": "linear-gradient(135deg,rgba(6,182,212,.26),rgba(14,116,144,.16))"},
+    {"id": "trending",     "name": "Trending Now",        "icon": "🔥", "ready": True,
+     "desc": "Reacts to whatever is blowing up right now.",
+     "bg": "linear-gradient(135deg,#1a0a03,#2d1406)", "overlay": "linear-gradient(135deg,rgba(249,115,22,.28),rgba(154,52,18,.16))"},
+    {"id": "colourgame",   "name": "Colour Game",         "icon": "🎨", "ready": True,
+     "desc": "Viral colour game bets and psychology.",
+     "bg": "linear-gradient(135deg,#1a1a03,#2d2d06)", "overlay": "linear-gradient(135deg,rgba(255,255,0,.25),rgba(200,200,0,.15))"},
+    {"id": "squidgame",    "name": "Squid Game",          "icon": "🦑", "ready": True,
+     "desc": "Squid Game theories and hidden details.",
+     "bg": "linear-gradient(135deg,#1a030a,#2d0614)", "overlay": "linear-gradient(135deg,rgba(255,50,150,.25),rgba(200,30,120,.15))"},
+    {"id": "movies",       "name": "New Movies",          "icon": "🍿", "ready": True,
+     "desc": "Trending movie Easter eggs and theories.",
+     "bg": "linear-gradient(135deg,#030a1a,#06142d)", "overlay": "linear-gradient(135deg,rgba(50,150,255,.25),rgba(30,120,200,.15))"},
+    {"id": "gta6",         "name": "GTA 6",               "icon": "🏎️", "ready": True,
+     "desc": "GTA 6 leaks, hype, and mechanics.",
+     "bg": "linear-gradient(135deg,#1a0518,#2d0a2d)", "overlay": "linear-gradient(135deg,rgba(255,50,255,.25),rgba(200,30,200,.15))"},
 ]
 
 
@@ -91,11 +118,13 @@ def run_job(job_id, category, do_upload, privacy):
             secret_file = cat_cfg.get("youtube_client_secret")  # None -> client_secret.json
             job["status"] = "uploading"
             _log(job, "upload", f"Uploading to YouTube ({token_file or 'token.json'})...")
+            slots = sched.slots_for(cfg, 1)          # [] when scheduling is disabled
             try:
                 up = yt.upload_video(
                     result["path"], md["title"], md["description"], md["tags"],
                     privacy=privacy, progress=progress, token_file=token_file,
                     secret_file=secret_file,
+                    publish_at=slots[0] if slots else None,
                 )
                 job["result"]["youtube"] = up
                 _log(job, "upload", f"Uploaded: {up['url']}")
@@ -122,8 +151,13 @@ def run_job(job_id, category, do_upload, privacy):
 def index():
     # Build recent videos list from output folder
     recent = []
-    icons = {"reddit":"👽","relationship":"💔","cold":"🧊","horror":"👻","simpsons":"🍩","anime":"🌸","betrayal":"🔪","funny":"😂","games":"🎮"}
-    bgs   = {"reddit":"#1a0505","relationship":"#1a0510","cold":"#050d1a","horror":"#0d0505","simpsons":"#1a1200","anime":"#0d0518","betrayal":"#16060a","funny":"#161200","games":"#05140d"}
+    # Derived from CATEGORIES so new niches can never drift out of sync here.
+    icons = {c["id"]: c["icon"] for c in CATEGORIES}
+    bgs = {"reddit":"#1a0505","relationship":"#1a0510","cold":"#050d1a","horror":"#0d0505",
+           "simpsons":"#1a1200","anime":"#0d0518","betrayal":"#16060a","funny":"#161200",
+           "games":"#05140d","space":"#050a18","fifa":"#03140a","gaming":"#0a0518",
+           "aitools":"#04121a","trending":"#1a0a03","colourgame":"#1a1a03","squidgame":"#1a030a",
+           "movies":"#030a1a","gta6":"#1a0518"}
     try:
         mp4s = sorted(
             [f for f in os.listdir(OUTPUT_DIR) if f.endswith(".mp4")],
@@ -242,6 +276,245 @@ def api_bulk():
                      args=(job_id, categories, count, do_upload, privacy),
                      daemon=True).start()
     return jsonify({"job_id": job_id, "total": count})
+
+
+# --------------------------------------------------------------------------- #
+# Import a long video -> ranked clip candidates -> render -> existing upload
+# --------------------------------------------------------------------------- #
+IMPORT_JOBS = {}
+IMPORT_DIR = os.path.join(HERE, "_imports")
+VIDEO_EXTS = (".mp4", ".mov", ".mkv", ".webm", ".avi", ".m4v")
+
+
+def import_status(cfg=None):
+    """Which import backends are usable — drives the key warnings in the UI."""
+    cfg = cfg or gen.load_config()
+    ic = cfg.get("import", {}) or {}
+    llm = cfg.get("llm", {}) or {}
+    try:
+        import faster_whisper  # noqa: F401
+        has_whisper = True
+    except ImportError:
+        has_whisper = False
+    return {
+        "engine": ic.get("transcription_engine", "deepgram"),
+        "has_deepgram": bool(((ic.get("deepgram") or {}).get("api_key") or "").strip()),
+        "has_whisper": has_whisper,
+        "has_groq": bool((llm.get("api_key") or "").strip()) and bool(llm.get("enabled")),
+        "min_clip_sec": ic.get("min_clip_sec", 30),
+        "max_clip_sec": ic.get("max_clip_sec", 90),
+        "burn_captions": bool(ic.get("burn_captions", True)),
+        "metadata_category": ic.get("metadata_category", "reddit"),
+    }
+
+
+def run_import_job(job_id, src_path):
+    job = IMPORT_JOBS[job_id]
+    try:
+        job["status"] = "analyzing"
+        cfg = gen.load_config()
+
+        def progress(stage, msg):
+            _log(job, stage, msg)
+
+        res = imp.analyze_video(cfg, src_path, progress=progress)
+        # The transcript stays server-side: the render step needs it for caption
+        # timings, but it's far too large to ship to the browser on every poll.
+        job["transcript"] = res["transcript"]
+        job["probe"] = res["probe"]
+        job["candidates"] = res["candidates"]
+        job["status"] = "done"
+        _log(job, "done", f"Analysis complete — {len(res['candidates'])} candidate(s).")
+    except Exception as e:  # noqa: BLE001
+        job["status"] = "error"
+        job["error"] = str(e)
+        _log(job, "error", f"ERROR: {e}")
+        traceback.print_exc()
+
+
+@app.route("/import")
+def import_page():
+    return render_template("import.html", categories=CATEGORIES,
+                           yt_ready=yt.has_client_secret(),
+                           imp_status=import_status())
+
+
+@app.route("/api/import/start", methods=["POST"])
+def api_import_start():
+    """Accept either an uploaded file or a local path to a long-form video."""
+    src_path = None
+
+    if "file" in request.files and request.files["file"].filename:
+        f = request.files["file"]
+        if not f.filename.lower().endswith(VIDEO_EXTS):
+            return jsonify({"error": f"Unsupported file type. Allowed: {', '.join(VIDEO_EXTS)}"}), 400
+        os.makedirs(IMPORT_DIR, exist_ok=True)
+        # Flatten any directory component the browser may send.
+        safe = os.path.basename(f.filename.replace("\\", "/"))
+        dest = os.path.join(IMPORT_DIR, safe)
+        base, ext = os.path.splitext(dest)
+        n = 1
+        while os.path.exists(dest):
+            dest = f"{base}_{n}{ext}"
+            n += 1
+        f.save(dest)
+        src_path = dest
+    else:
+        data = request.get_json(silent=True) or request.form or {}
+        raw = (data.get("path") or "").strip().strip('"')
+        if not raw:
+            return jsonify({"error": "Provide a video file or a local path."}), 400
+        if not os.path.isabs(raw):
+            raw = os.path.normpath(os.path.join(HERE, raw))
+        if not os.path.exists(raw):
+            return jsonify({"error": f"File not found: {raw}"}), 400
+        if not raw.lower().endswith(VIDEO_EXTS):
+            return jsonify({"error": f"Unsupported file type. Allowed: {', '.join(VIDEO_EXTS)}"}), 400
+        src_path = raw
+
+    st = import_status()
+    if st["engine"] == "deepgram" and not st["has_deepgram"] and not st["has_whisper"]:
+        return jsonify({"error": "No transcription backend available. Add DEEPGRAM_API_KEY "
+                                 "to .env, or pip install faster-whisper and set "
+                                 "import.transcription_engine to 'whisper'."}), 400
+    if st["engine"] == "whisper" and not st["has_whisper"]:
+        return jsonify({"error": "faster-whisper is not installed. Run "
+                                 "'pip install faster-whisper' or switch "
+                                 "import.transcription_engine to 'deepgram'."}), 400
+
+    job_id = uuid.uuid4().hex[:12]
+    IMPORT_JOBS[job_id] = {"status": "queued", "stage": "queued", "log": [],
+                           "error": None, "kind": "import", "source": src_path,
+                           "candidates": [], "probe": None}
+    threading.Thread(target=run_import_job, args=(job_id, src_path),
+                     daemon=True).start()
+    return jsonify({"job_id": job_id, "source": os.path.basename(src_path)})
+
+
+@app.route("/api/import/status/<job_id>")
+def api_import_status(job_id):
+    job = IMPORT_JOBS.get(job_id)
+    if not job:
+        return jsonify({"error": "unknown import job"}), 404
+    return jsonify({k: v for k, v in job.items() if k != "transcript"})
+
+
+def run_import_render_job(job_id, analyze_id, indices, category, burn_captions,
+                          do_upload, privacy):
+    job = IMPORT_JOBS[job_id]
+    src = IMPORT_JOBS[analyze_id]
+    try:
+        job["status"] = "running"
+        cfg = gen.load_config()
+        transcript = src["transcript"]
+        src_path = src["source"]
+
+        def progress(stage, msg):
+            _log(job, stage, msg)
+
+        for n, idx in enumerate(indices, 1):
+            cand = src["candidates"][idx]
+            _log(job, "render", f"=== Clip {n}/{len(indices)} "
+                                f"[{cand['start']:.1f}s-{cand['end']:.1f}s] ===")
+            result = imp.render_candidate(
+                cfg, src_path, transcript, cand, category=category,
+                burn_captions=burn_captions, progress=progress,
+            )
+            md = meta_mod.build_metadata(result)
+            result["meta"] = md
+
+            entry = {
+                "file": os.path.basename(result["path"]),
+                "title": result["title"],
+                "category": result["category"],
+                "duration": round(result["duration"], 1),
+                "score": cand.get("score"),
+            }
+
+            if do_upload:
+                cat_cfg = (cfg.get("categories") or {}).get(category, {})
+                token = cat_cfg.get("youtube_token")
+                secret = cat_cfg.get("youtube_client_secret")
+                _log(job, "upload", f"Uploading to YouTube ({token or 'token.json'})...")
+                try:
+                    up = yt.upload_video(
+                        result["path"], md["title"], md["description"], md["tags"],
+                        privacy=privacy, progress=progress,
+                        token_file=token, secret_file=secret,
+                    )
+                    entry["youtube"] = up
+                    _log(job, "upload", f"Uploaded: {up['url']}")
+                except Exception as e:  # noqa: BLE001
+                    msg = str(e)
+                    entry["upload_error"] = msg
+                    _log(job, "upload", f"UPLOAD ERROR: {msg}")
+                    if "uploadLimitExceeded" in msg or "exceeded the number" in msg:
+                        _log(job, "render", "YouTube daily upload limit hit — stopping.")
+                        job.setdefault("results", []).append(entry)
+                        job["completed"] = job.get("completed", 0) + 1
+                        break
+
+            job.setdefault("results", []).append(entry)
+            job["completed"] = job.get("completed", 0) + 1
+
+        job["status"] = "done"
+        _log(job, "done", f"Rendered {job.get('completed', 0)} clip(s).")
+    except Exception as e:  # noqa: BLE001
+        job["status"] = "error"
+        job["error"] = str(e)
+        _log(job, "error", f"ERROR: {e}")
+        traceback.print_exc()
+
+
+@app.route("/api/import/render", methods=["POST"])
+def api_import_render():
+    data = request.get_json(force=True)
+    analyze_id = data.get("job_id")
+    src = IMPORT_JOBS.get(analyze_id)
+    if not src or not src.get("transcript"):
+        return jsonify({"error": "Unknown or unfinished analysis job. Re-run the analysis."}), 400
+
+    total = len(src.get("candidates") or [])
+    indices = data.get("indices")
+    if not isinstance(indices, list) or not indices:
+        return jsonify({"error": "Select at least one clip."}), 400
+    try:
+        indices = [int(i) for i in indices]
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid clip selection."}), 400
+    bad = [i for i in indices if i < 0 or i >= total]
+    if bad:
+        return jsonify({"error": f"Clip selection out of range: {bad}"}), 400
+
+    category = data.get("category") or import_status().get("metadata_category")
+    if not any(c["id"] == category and c["ready"] for c in CATEGORIES):
+        return jsonify({"error": f"Unknown category: {category}"}), 400
+
+    do_upload = bool(data.get("upload", False))
+    privacy = data.get("privacy", "public")
+    burn_captions = bool(data.get("burn_captions", True))
+
+    if do_upload:
+        if not yt.has_client_secret():
+            return jsonify({"error": "YouTube not configured. Add client_secret.json."}), 400
+        cfg = gen.load_config()
+        cat_cfg = (cfg.get("categories") or {}).get(category, {})
+        token = cat_cfg.get("youtube_token") or "token.json"
+        token_path = token if os.path.isabs(token) else os.path.join(HERE, token)
+        if not os.path.exists(token_path):
+            return jsonify({"error": f"Authorization required for '{category}' (needs: {token}). "
+                                     f"Run 'python youtube_upload.py {token}' first."}), 400
+
+    job_id = uuid.uuid4().hex[:12]
+    IMPORT_JOBS[job_id] = {"status": "queued", "stage": "queued", "log": [],
+                           "error": None, "kind": "import_render",
+                           "total": len(indices), "completed": 0, "results": []}
+    threading.Thread(
+        target=run_import_render_job,
+        args=(job_id, analyze_id, indices, category, burn_captions, do_upload, privacy),
+        daemon=True,
+    ).start()
+    return jsonify({"job_id": job_id, "total": len(indices)})
 
 
 DOWNLOAD_JOBS = {}

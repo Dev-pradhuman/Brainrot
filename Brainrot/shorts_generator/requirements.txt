@@ -6,3 +6,13 @@ flask
 google-api-python-client
 google-auth-oauthlib
 google-auth-httplib2
+yt-dlp
+static-ffmpeg
+# Windows has no system tz database, so zoneinfo needs this for schedule.py
+tzdata
+
+# Optional — only for the "Import Long Video" path (import_clip.py) when you set
+# import.transcription_engine to "whisper" in config.json. Transcribes locally
+# and free instead of via Deepgram, at the cost of a model download (~145MB for
+# "base") and slow CPU-bound transcription. Not needed on the default setting.
+# faster-whisper

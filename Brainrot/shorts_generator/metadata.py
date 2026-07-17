@@ -80,6 +80,36 @@ CATEGORY_TAGS = {
         "dark matter", "space anomaly", "terrifying space", "deep space",
         "solar system", "exoplanets", "space exploration", "cosmic scale",
     ],
+    "fifa": [
+        "fifa", "ea fc", "ea sports fc", "fc 26", "fifa ultimate team",
+        "fut", "ultimate team", "fifa pack opening", "fifa trading",
+        "fifa tips", "fifa meta", "sbc", "squad building challenge",
+        "fifa goals", "fifa skills", "fut champions", "fifa rage",
+        "fifa moments", "pack luck", "fifa coins",
+    ],
+    "gaming": [
+        "gaming", "gaming stories", "gaming news", "gaming drama",
+        "video game secrets", "cancelled games", "game development",
+        "gaming history", "speedrun", "speedrun cheating", "esports drama",
+        "gaming scandal", "game dev secrets", "hidden details",
+        "gaming facts", "gaming lore", "gaming community", "game theory",
+        "gaming iceberg", "gaming documentary",
+    ],
+    "aitools": [
+        "claude code", "claude", "anthropic", "mcp", "model context protocol",
+        "ai coding", "ai coding assistant", "codex", "openai codex",
+        "cursor", "ai developer tools", "vibe coding", "local llm",
+        "ollama", "run llm locally", "ai agents", "coding productivity",
+        "software engineering", "developer tools", "ai workflow",
+        "programming tips", "ai for developers",
+    ],
+    "trending": [
+        "trending", "trending now", "viral", "viral video", "breaking news",
+        "internet drama", "what happened", "explained", "trending topic",
+        "news today", "pop culture", "celebrity news", "internet culture",
+        "viral moment", "reaction", "hot topic", "current events",
+        "social media drama", "trending shorts", "today news",
+    ],
 }
 
 # ---------------------------------------------------------------------------
@@ -136,6 +166,26 @@ CATEGORY_HASHTAGS = {
         "#shorts #space #blackhole #astronomy #terrifying #fyp",
         "#shorts #space #aliens #fermiparadox #deepspace #fyp",
     ],
+    "fifa": [
+        "#shorts #fifa #eafc #ultimateteam #fut #fyp",
+        "#shorts #eafc #fifa #packopening #futchampions #fyp",
+        "#shorts #fifa #fut #sbc #fifatips #fyp",
+    ],
+    "gaming": [
+        "#shorts #gaming #gamingnews #gamingstories #gamer #fyp",
+        "#shorts #gaming #gamingdrama #speedrun #gamedev #fyp",
+        "#shorts #gaming #gamingfacts #cancelledgames #lore #fyp",
+    ],
+    "aitools": [
+        "#shorts #claudecode #ai #coding #mcp #fyp",
+        "#shorts #ai #aicoding #developer #claude #fyp",
+        "#shorts #coding #localllm #aitools #programming #fyp",
+    ],
+    "trending": [
+        "#shorts #trending #viral #news #explained #fyp",
+        "#shorts #trending #viralvideo #whathappened #breaking #fyp",
+        "#shorts #trending #internetdrama #popculture #viral #fyp",
+    ],
 }
 
 # ---------------------------------------------------------------------------
@@ -182,13 +232,30 @@ CATEGORY_DESCRIPTIONS = {
         "cta": "🚀 Follow for terrifying space facts that will keep you up at night.",
         "engage": "💬 Are we alone in the universe? Comment below 👇",
     },
+    "fifa": {
+        "cta": "⚽ Follow for daily EA FC tips, pack luck and Ultimate Team chaos!",
+        "engage": "💬 Would you have scored that? Comment below 👇",
+    },
+    "gaming": {
+        "cta": "🕹️ Follow for the gaming stories nobody talks about.",
+        "engage": "💬 Did you know this one? Drop it below 👇",
+    },
+    "aitools": {
+        "cta": "🤖 Follow for AI coding workflows that actually save you hours.",
+        "engage": "💬 What's your setup? Drop it below 👇",
+    },
+    "trending": {
+        "cta": "🔥 Follow to stay ahead of everything trending right now.",
+        "engage": "💬 What's your take on this? Comment below 👇",
+    },
 }
 
 # Title emoji prefixes (subtle, adds CTR without being spammy)
 CATEGORY_EMOJI = {
     "reddit": "👽", "relationship": "💔", "cold": "🧊", "horror": "👻",
     "simpsons": "🍩", "anime": "⚡", "betrayal": "🔪", "funny": "😂",
-    "games": "🎮", "space": "🌌",
+    "games": "🎮", "space": "🌌", "fifa": "⚽", "gaming": "🕹️",
+    "aitools": "🤖", "trending": "🔥",
 }
 
 

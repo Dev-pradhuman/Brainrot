@@ -95,13 +95,34 @@ def channel_info(token_file=None, secret_file=None):
 
 def upload_video(path, title, description, tags, privacy="public",
                  made_for_kids=False, progress=None, token_file=None,
-                 secret_file=None):
-    """Upload and return the video id + watch URL (+ channel title)."""
+                 secret_file=None, publish_at=None):
+    """Upload and return the video id + watch URL (+ channel title).
+
+    `publish_at` (timezone-aware datetime) schedules the video to go live later
+    instead of publishing now — the way to hit a target country's prime time from
+    another timezone. The API only accepts publishAt on a video that is private
+    and has never been published, so privacy is forced to "private" when it's set;
+    YouTube flips it public itself at the appointed time.
+    """
     import time
     from googleapiclient.errors import HttpError
 
     creds = _get_credentials(token_file, secret_file)
     youtube = build("youtube", "v3", credentials=creds)
+
+    status = {
+        "privacyStatus": privacy,
+        "selfDeclaredMadeForKids": made_for_kids,
+    }
+    scheduled_iso = None
+    if publish_at is not None:
+        import schedule as sched
+
+        scheduled_iso = sched.to_iso8601(publish_at)
+        status["privacyStatus"] = "private"
+        status["publishAt"] = scheduled_iso
+        if progress:
+            progress("upload", f"Scheduling publish for {sched.describe(publish_at)}")
 
     body = {
         "snippet": {
@@ -110,10 +131,7 @@ def upload_video(path, title, description, tags, privacy="public",
             "tags": tags,
             "categoryId": "24",  # Entertainment
         },
-        "status": {
-            "privacyStatus": privacy,
-            "selfDeclaredMadeForKids": made_for_kids,
-        },
+        "status": status,
     }
 
     media = MediaFileUpload(path, chunksize=1024 * 1024, resumable=True, mimetype="video/mp4")
@@ -150,7 +168,10 @@ def upload_video(path, title, description, tags, privacy="public",
             time.sleep(retry_count * 2)
 
     vid = response["id"]
-    return {"id": vid, "url": f"https://youtu.be/{vid}"}
+    out = {"id": vid, "url": f"https://youtu.be/{vid}"}
+    if scheduled_iso:
+        out["scheduled_for"] = scheduled_iso
+    return out
 
 
 def authorize(token_file=None, secret_file=None):

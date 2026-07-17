@@ -13,6 +13,7 @@ import time
 
 import generate as gen
 import metadata as meta_mod
+import schedule as sched
 import youtube_upload as yt
 
 
@@ -84,6 +85,15 @@ def bulk_generate(category, count, do_upload=False, privacy="public",
     if len(cats) > 1:
         log("bulk", f"Mixing niches round-robin: {', '.join(cats)}")
 
+    # One prime-time slot per video, best-first. Empty when scheduling is off, in
+    # which case uploads publish immediately as before.
+    slots = sched.slots_for(cfg, count) if do_upload else []
+    if slots:
+        log("bulk", f"Scheduling {len(slots)} publish slot(s) in "
+                    f"{cfg.get('schedule', {}).get('timezone')}:")
+        for s in slots:
+            log("bulk", f"    {sched.describe(s)}")
+
     results = []
     for i in range(count):
         cat = cats[i % len(cats)]
@@ -102,6 +112,7 @@ def bulk_generate(category, count, do_upload=False, privacy="public",
                     result["path"], md["title"], md["description"], md["tags"],
                     privacy=privacy, progress=progress,
                     token_file=token, secret_file=secret,
+                    publish_at=slots[i] if i < len(slots) else None,
                 )
                 result["youtube"] = up
                 log("upload", f"Uploaded: {up['url']}")

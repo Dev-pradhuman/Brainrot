@@ -49,6 +49,10 @@ NICHES = {
     "Betrayal": "Bg_betrayal",
     "Funny Stories": "Bg_funny",
     "Gaming Reactions": "Bg_games",
+    "Colour Game": "Bg_colourgame",
+    "Squid Game": "Bg_squidgame",
+    "New Movies": "Bg_movies",
+    "GTA 6": "Bg_gta6",
 }
 
 BROWSERS = {

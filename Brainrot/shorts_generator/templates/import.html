@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ReelNexus - Import Long Video</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-darker: #06060a;
+  --bg-dark: #09090e;
+  --bg-card: #12121c;
+  --bg-card-hover: #171726;
+  --border-color: #1e1e30;
+  --border-color-hover: #33334d;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --text-accent: #a855f7;
+  --text-accent-hover: #c084fc;
+  --glow-purple: 0 0 20px rgba(168, 85, 247, 0.45);
+  --glow-purple-light: 0 0 12px rgba(168, 85, 247, 0.2);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--bg-darker);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 32px; border-bottom: 1px solid var(--border-color);
+  background: var(--bg-dark); position: sticky; top: 0; z-index: 20;
+}
+.brand { font-family: 'Anton', sans-serif; font-size: 22px; letter-spacing: .5px; }
+.brand span { color: var(--text-accent); }
+.btn-back-nav {
+  color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500;
+  padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 8px;
+  transition: all .2s;
+}
+.btn-back-nav:hover { color: var(--text-main); border-color: var(--border-color-hover); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 36px 24px 80px; }
+h1 { font-family: 'Anton', sans-serif; font-size: 38px; letter-spacing: .5px; }
+.sub { color: var(--text-muted); margin-top: 8px; font-size: 15px; line-height: 1.6; }
+.card {
+  background: var(--bg-card); border: 1px solid var(--border-color);
+  border-radius: 14px; padding: 24px; margin-top: 24px;
+}
+.card h2 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.card .hint { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; line-height: 1.5; }
+label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+input[type=text], select {
+  width: 100%; padding: 11px 13px; background: var(--bg-darker); color: var(--text-main);
+  border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 14px;
+}
+input[type=text]:focus, select:focus { outline: none; border-color: var(--text-accent); }
+.row { display: flex; gap: 16px; flex-wrap: wrap; }
+.row > div { flex: 1; min-width: 190px; }
+.divider { text-align: center; color: var(--text-muted); font-size: 12px; margin: 16px 0; letter-spacing: 1px; }
+.btn {
+  background: var(--text-accent); color: #fff; border: none; padding: 12px 24px;
+  border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+}
+.btn:hover:not(:disabled) { background: var(--text-accent-hover); box-shadow: var(--glow-purple); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-ghost {
+  background: transparent; border: 1px solid var(--border-color); color: var(--text-muted);
+}
+.btn-ghost:hover:not(:disabled) { color: var(--text-main); border-color: var(--border-color-hover); box-shadow: none; background: transparent; }
+.warn {
+  background: rgba(234, 179, 8, .08); border: 1px solid rgba(234, 179, 8, .3);
+  color: #fde68a; padding: 12px 16px; border-radius: 8px; font-size: 13px;
+  margin-top: 16px; line-height: 1.6;
+}
+.err {
+  background: rgba(220, 38, 38, .1); border: 1px solid rgba(220, 38, 38, .35);
+  color: #fca5a5; padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-top: 16px;
+}
+.ok {
+  background: rgba(34, 197, 94, .08); border: 1px solid rgba(34, 197, 94, .3);
+  color: #86efac; padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-top: 16px;
+}
+.log {
+  background: #04040a; border: 1px solid var(--border-color); border-radius: 8px;
+  padding: 14px; font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 12px; line-height: 1.65; max-height: 280px; overflow-y: auto;
+  color: #a5b4fc; white-space: pre-wrap; word-break: break-word;
+}
+.cand {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--bg-darker); border: 1px solid var(--border-color);
+  border-radius: 10px; padding: 14px; margin-bottom: 10px; cursor: pointer;
+  transition: all .15s;
+}
+.cand:hover { border-color: var(--border-color-hover); background: var(--bg-card-hover); }
+.cand.on { border-color: var(--text-accent); box-shadow: var(--glow-purple-light); }
+.cand input[type=checkbox] { margin-top: 4px; width: 17px; height: 17px; accent-color: var(--text-accent); cursor: pointer; flex-shrink: 0; }
+.cand-body { flex: 1; min-width: 0; }
+.cand-hook { font-weight: 600; font-size: 14px; margin-bottom: 5px; line-height: 1.45; }
+.cand-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.cand-why { font-size: 12px; color: #7c7c96; margin-top: 6px; font-style: italic; line-height: 1.5; }
+.score {
+  font-family: 'Anton', sans-serif; font-size: 15px; padding: 4px 10px;
+  border-radius: 6px; background: rgba(168,85,247,.15); color: var(--text-accent);
+  flex-shrink: 0; letter-spacing: .5px;
+}
+.hidden { display: none; }
+.bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+.check input { width: 16px; height: 16px; accent-color: var(--text-accent); cursor: pointer; }
+.res { background: var(--bg-darker); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; font-size: 13px; }
+.res a { color: var(--text-accent); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">REEL<span>NEXUS</span></div>
+  <div>
+    <a href="/channels" class="btn-back-nav" style="margin-right:10px;">Channels</a>
+    <a href="/downloader" class="btn-back-nav" style="margin-right:10px;">Downloader</a>
+    <a href="/" class="btn-back-nav">Back to Generator</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <h1>Import Long Video</h1>
+  <p class="sub">
+    Pull short-form clips out of footage you already have. The audio gets transcribed,
+    an LLM ranks the most clippable moments, and the ones you pick are cut to
+    {{ imp_status.min_clip_sec }}-{{ imp_status.max_clip_sec }}s, cropped to 9:16, and captioned
+    with your existing caption style. No script writing, no TTS.
+  </p>
+
+  {% if not imp_status.has_groq %}
+  <div class="warn">
+    <strong>GROQ_API_KEY missing.</strong> Moment ranking will fall back to speech-density
+    windows, which is much cruder. Add it to <code>.env</code> (see <code>.env.example</code>).
+  </div>
+  {% endif %}
+  {% if imp_status.engine == 'deepgram' and not imp_status.has_deepgram %}
+  <div class="warn">
+    <strong>DEEPGRAM_API_KEY missing</strong> and <code>import.transcription_engine</code>
+    is set to <code>deepgram</code>.
+    {% if imp_status.has_whisper %}
+      Will fall back to local whisper — free, but slow and CPU-heavy.
+    {% else %}
+      Transcription will fail. Add the key to <code>.env</code>, or run
+      <code>pip install faster-whisper</code> and set
+      <code>import.transcription_engine</code> to <code>"whisper"</code> in config.json.
+    {% endif %}
+  </div>
+  {% endif %}
+  {% if imp_status.engine == 'whisper' and not imp_status.has_whisper %}
+  <div class="warn">
+    <strong>faster-whisper is not installed</strong> but
+    <code>import.transcription_engine</code> is <code>"whisper"</code>.
+    Run <code>pip install faster-whisper</code>, or switch back to
+    <code>"deepgram"</code> in config.json.
+  </div>
+  {% endif %}
+
+  <!-- STEP 1 -->
+  <div class="card">
+    <h2>1. Pick a source video</h2>
+    <p class="hint">
+      Transcribing with <strong>{{ imp_status.engine }}</strong>.
+      For big files, prefer the local path — uploading a multi-GB video through the
+      browser is slow and pointless when the file is already on this machine.
+    </p>
+
+    <label for="pathInput">Local path</label>
+    <input type="text" id="pathInput" placeholder="G:\My Drive\podcasts\episode_42.mp4"/>
+
+    <div class="divider">— OR —</div>
+
+    <label for="fileInput">Upload a file</label>
+    <input type="file" id="fileInput" accept="video/mp4,video/quicktime,video/x-matroska,video/webm,.mp4,.mov,.mkv,.webm,.avi,.m4v"
+           style="width:100%;padding:11px 13px;background:var(--bg-darker);border:1px solid var(--border-color);border-radius:8px;color:var(--text-muted);font-family:inherit;font-size:13px;"/>
+
+    <div class="bar">
+      <button class="btn" id="analyzeBtn" onclick="startAnalyze()">Analyze Video</button>
+      <span id="srcNote" style="font-size:13px;color:var(--text-muted);"></span>
+    </div>
+    <div id="startErr" class="err hidden"></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card hidden" id="logCard">
+    <h2>2. Analysis</h2>
+    <p class="hint" id="probeNote">Extracting audio and transcribing…</p>
+    <div class="log" id="log"></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card hidden" id="candCard">
+    <h2>3. Pick the clips worth rendering</h2>
+    <p class="hint">
+      Ranked most-promising first. Score is the model's own confidence — treat it as a
+      hint, not a verdict. Nothing is rendered until you hit the button.
+    </p>
+    <div id="cands"></div>
+
+    <div class="row" style="margin-top:18px;">
+      <div>
+        <label for="catSel">Metadata niche (drives title/tags/hashtags + upload channel)</label>
+        <select id="catSel">
+          {% for c in categories %}
+          <option value="{{ c.id }}" {% if c.id == imp_status.metadata_category %}selected{% endif %}>{{ c.icon }} {{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="privSel">Privacy</label>
+        <select id="privSel">
+          <option value="public">Public</option>
+          <option value="unlisted">Unlisted</option>
+          <option value="private" selected>Private</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="bar">
+      <label class="check">
+        <input type="checkbox" id="capChk" {% if imp_status.burn_captions %}checked{% endif %}/>
+        Burn in captions
+      </label>
+      <label class="check">
+        <input type="checkbox" id="upChk" {% if not yt_ready %}disabled{% endif %}/>
+        Upload to YouTube{% if not yt_ready %} (needs client_secret.json){% endif %}
+      </label>
+      <button class="btn btn-ghost" onclick="toggleAll()">Select / clear all</button>
+      <button class="btn" id="renderBtn" onclick="startRender()">Render selected</button>
+    </div>
+    <div id="renderErr" class="err hidden"></div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="card hidden" id="rlogCard">
+    <h2>4. Render</h2>
+    <div class="log" id="rlog"></div>
+    <div id="results" style="margin-top:16px;"></div>
+  </div>
+</div>
+
+<script>
+let analyzeId = null, renderId = null, poll = null, cands = [];
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => (
+    {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]
+  ));
+}
+function fmt(t) {
+  const m = Math.floor(t / 60), s = Math.floor(t % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.remove("hidden");
+}
+
+async function startAnalyze() {
+  document.getElementById("startErr").classList.add("hidden");
+  const path = document.getElementById("pathInput").value.trim();
+  const file = document.getElementById("fileInput").files[0];
+  if (!path && !file) return showErr("startErr", "Give me a local path or pick a file.");
+
+  const btn = document.getElementById("analyzeBtn");
+  btn.disabled = true;
+  btn.textContent = file ? "Uploading…" : "Starting…";
+  document.getElementById("candCard").classList.add("hidden");
+  document.getElementById("rlogCard").classList.add("hidden");
+
+  try {
+    let res;
+    if (file) {
+      const fd = new FormData();
+      fd.append("file", file);
+      res = await fetch("/api/import/start", { method: "POST", body: fd });
+    } else {
+      res = await fetch("/api/import/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path }),
+      });
+    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to start.");
+
+    analyzeId = data.job_id;
+    document.getElementById("srcNote").textContent = "Source: " + data.source;
+    document.getElementById("logCard").classList.remove("hidden");
+    document.getElementById("log").textContent = "";
+    btn.textContent = "Analyzing…";
+    poll = setInterval(pollAnalyze, 1000);
+  } catch (e) {
+    showErr("startErr", e.message);
+    btn.disabled = false;
+    btn.textContent = "Analyze Video";
+  }
+}
+
+async function pollAnalyze() {
+  try {
+    const res = await fetch(`/api/import/status/${analyzeId}`);
+    const job = await res.json();
+    const log = document.getElementById("log");
+    log.textContent = (job.log || []).join("\n");
+    log.scrollTop = log.scrollHeight;
+
+    if (job.probe) {
+      document.getElementById("probeNote").textContent =
+        `${job.probe.width}x${job.probe.height} · ${fmt(job.probe.duration)} · ${job.probe.video_codec}`;
+    }
+    if (job.status === "done" || job.status === "error") {
+      clearInterval(poll);
+      const btn = document.getElementById("analyzeBtn");
+      btn.disabled = false;
+      btn.textContent = "Analyze Video";
+      if (job.status === "done") renderCandidates(job.candidates || []);
+      else showErr("startErr", job.error || "Analysis failed.");
+    }
+  } catch (e) {
+    console.error("poll failed", e);
+  }
+}
+
+function renderCandidates(list) {
+  cands = list;
+  const box = document.getElementById("cands");
+  if (!list.length) {
+    box.innerHTML = `<p class="hint">No candidates found. Try a longer video, or one with more speech.</p>`;
+    document.getElementById("candCard").classList.remove("hidden");
+    return;
+  }
+  box.innerHTML = list.map((c, i) => `
+    <label class="cand on" id="cand${i}">
+      <input type="checkbox" checked onchange="toggleOne(${i})"/>
+      <div class="cand-body">
+        <div class="cand-hook">${esc(c.hook)}</div>
+        <div class="cand-meta">
+          <span>${fmt(c.start)} → ${fmt(c.end)}</span>
+          <span>${(c.end - c.start).toFixed(1)}s</span>
+        </div>
+        ${c.rationale ? `<div class="cand-why">${esc(c.rationale)}</div>` : ""}
+      </div>
+      <div class="score">${(c.score ?? 0).toFixed(2)}</div>
+    </label>
+  `).join("");
+  document.getElementById("candCard").classList.remove("hidden");
+  document.getElementById("candCard").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function toggleOne(i) {
+  const el = document.getElementById("cand" + i);
+  el.classList.toggle("on", el.querySelector("input").checked);
+}
+function toggleAll() {
+  const boxes = [...document.querySelectorAll("#cands input[type=checkbox]")];
+  const target = !boxes.every(b => b.checked);
+  boxes.forEach((b, i) => { b.checked = target; toggleOne(i); });
+}
+function selected() {
+  return [...document.querySelectorAll("#cands input[type=checkbox]")]
+    .map((b, i) => (b.checked ? i : -1)).filter(i => i >= 0);
+}
+
+async function startRender() {
+  document.getElementById("renderErr").classList.add("hidden");
+  const indices = selected();
+  if (!indices.length) return showErr("renderErr", "Select at least one clip.");
+
+  const btn = document.getElementById("renderBtn");
+  btn.disabled = true;
+  btn.textContent = "Rendering…";
+
+  try {
+    const res = await fetch("/api/import/render", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        job_id: analyzeId,
+        indices,
+        category: document.getElementById("catSel").value,
+        privacy: document.getElementById("privSel").value,
+        upload: document.getElementById("upChk").checked,
+        burn_captions: document.getElementById("capChk").checked,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to start render.");
+
+    renderId = data.job_id;
+    document.getElementById("rlogCard").classList.remove("hidden");
+    document.getElementById("rlog").textContent = "";
+    document.getElementById("results").innerHTML = "";
+    document.getElementById("rlogCard").scrollIntoView({ behavior: "smooth", block: "start" });
+    poll = setInterval(pollRender, 1000);
+  } catch (e) {
+    showErr("renderErr", e.message);
+    btn.disabled = false;
+    btn.textContent = "Render selected";
+  }
+}
+
+async function pollRender() {
+  try {
+    const res = await fetch(`/api/import/status/${renderId}`);
+    const job = await res.json();
+    const log = document.getElementById("rlog");
+    log.textContent = (job.log || []).join("\n");
+    log.scrollTop = log.scrollHeight;
+
+    document.getElementById("results").innerHTML = (job.results || []).map(r => `
+      <div class="res">
+        <strong>${esc(r.title)}</strong> · ${r.duration}s
+        · <a href="/output/${encodeURIComponent(r.file)}" target="_blank">preview</a>
+        ${r.youtube ? ` · <a href="${esc(r.youtube.url)}" target="_blank">${esc(r.youtube.url)}</a>` : ""}
+        ${r.upload_error ? `<div style="color:#fca5a5;margin-top:6px;">${esc(r.upload_error)}</div>` : ""}
+      </div>
+    `).join("");
+
+    if (job.status === "done" || job.status === "error") {
+      clearInterval(poll);
+      const btn = document.getElementById("renderBtn");
+      btn.disabled = false;
+      btn.textContent = "Render selected";
+      if (job.status === "error") showErr("renderErr", job.error || "Render failed.");
+    }
+  } catch (e) {
+    console.error("poll failed", e);
+  }
+}
+</script>
+</body>
+</html>

@@ -120,7 +120,61 @@ THEME_PROMPTS = {
         "rogue planets, or strange signals from deep space). Make the viewer feel the absolute horror of the "
         "universe's scale and silence."
     ),
+    "fifa": (
+        "a high-emotion EA FC / FIFA Ultimate Team moment or hard-won piece of advice — insane pack luck, a "
+        "meta player nobody is using, an SBC that prints coins, a trading trick, or a last-minute 90th-minute "
+        "winner. Speak like a player who has grinded thousands of games and is letting the viewer in on "
+        "something. Be specific about the play or the card; never vague."
+    ),
+    "gaming": (
+        "a wild, specific gaming-culture story: a cancelled game that leaked, a studio meltdown, a speedrun "
+        "cheating scandal that unravelled, a dev secret hidden in the code for years, or an esports moment that "
+        "broke the community. Tell it like a story with a turn and a payoff, not a list of facts."
+    ),
+    "aitools": (
+        "one concrete, immediately usable AI-coding-tool tip for developers — a Claude Code workflow that saves "
+        "real hours, an MCP server worth wiring up and exactly what it unlocks, how Codex compares in practice, "
+        "or running a local model on normal hardware. Open with the payoff ('this replaced X hours of my week'), "
+        "then deliver the actual concrete steps. Talk like a working engineer to another engineer: specific, "
+        "no hype, no buzzwords, no 'in today's video'. Never invent product features, version numbers, "
+        "benchmarks, or pricing — if a specific is not certain, describe the capability in general terms instead."
+    ),
+    "trending": (
+        "a fast, punchy reaction to an internet trend. Explain what happened and why people care in the first "
+        "five seconds, then give a genuinely interesting angle on it. Assume the viewer has seen the headline "
+        "but not the detail."
+    ),
+    "colourgame": (
+        "a high-stakes, thrilling story or strategy about a mysterious, viral 'Colour Game' where "
+        "participants bet everything on colors. Focus on the psychology, the intense tension of the reveal, "
+        "and a wild, unexpected twist."
+    ),
+    "squidgame": (
+        "a dark, suspenseful Squid Game theory or fan-fiction scenario about a terrifying new hidden game "
+        "or a secret detail that changes the entire plot. Keep the tension high and end with a shocking conclusion."
+    ),
+    "movies": (
+        "a mind-blowing Easter egg, secret detail, or insane fan theory about a new trending movie. "
+        "Present it as something everyone missed and explain it with high conviction, ending on a crazy realization."
+    ),
+    "gta6": (
+        "an insane, specific GTA 6 leak, theory, or deep-dive into a teased feature. Talk about it with "
+        "massive hype and speculation, framing it as a game-changing mechanic that will break the industry."
+    ),
 }
+
+# Themes that describe real-world events rather than fiction. Scripts here get an
+# extra guard, because an invented "scandal" about a real named person reads as
+# news and would be published as though it were true.
+NONFICTION_THEMES = {"games", "gaming", "aitools", "trending", "fifa", "movies", "gta6"}
+
+NONFICTION_GUARD = (
+    "\n- CRITICAL: this is non-fiction. Do NOT fabricate events, quotes, statistics, or "
+    "scandals involving real, named, living people, companies, or products. If you do not "
+    "have a specific verified fact, write about the topic in general terms, use a clearly "
+    "hypothetical framing, or use an unnamed/anonymous subject instead. Never present an "
+    "invented claim as something that actually happened."
+)
 
 FALLBACK_STORY = {
     "title": "The Night Everything Changed",
@@ -170,7 +224,9 @@ def generate_script(cfg, category, progress=None):
         f"- SCRIPT: starts with the exact hook, followed by ~{target} words of continuous, spoken-word voiceover. "
         "Write in highly conversational, short, active sentences. Build tension, keep the pacing fast, and "
         "finish with a punchy twist, ironic payoff, or unsettling cliffhanger.\n"
-        "- TITLE: high-CTR, highly engaging title under 70 characters. Do not use all caps or emojis.\n\n"
+        "- TITLE: high-CTR, highly engaging title under 70 characters. Do not use all caps or emojis."
+        + (NONFICTION_GUARD if category in NONFICTION_THEMES else "")
+        + "\n\n"
         'Respond as JSON: {"title": "...", "hook": "...", "script": "..."}'
     )
 
@@ -214,18 +270,67 @@ def _strip_fences(text):
     return text.strip()
 
 
-def generate_games_script(cfg, category, progress=None):
-    """Fetch a trending gaming video and write a reaction script about it.
+# Categories scripted about a REAL trending video rather than invented outright.
+# Maps category id -> the config block holding its fetch settings.
+TRENDING_CATEGORIES = {"games": "games", "trending": "trending"}
 
-    Falls back to a generic games story if the fetch or LLM call fails.
+_TRENDING_FLAVOR = {
+    "games": {
+        "persona": "a top-tier viral gaming Shorts scriptwriter. You hype up trending "
+                   "gaming clips so viewers NEED to watch.",
+        "brief": "a hyped reaction/commentary voiceover for a YouTube Short about this "
+                 "trending gaming video",
+        "hook": "a scroll-stopping 'you won't believe what this gamer just did' style "
+                "line that teases the craziest part without spoiling it",
+        "close": "ends by telling viewers to follow for more gaming clips",
+        "title_rule": "high-CTR YouTube title under 70 chars referencing the gamer/game",
+        "fb_title": "{channel} just did the UNTHINKABLE",
+        "fb_hook": "You won't believe what {channel} just did.",
+        "fb_tail": "Gamers everywhere are losing their minds over this one. Follow for "
+                   "more insane gaming moments every single day.",
+    },
+    "trending": {
+        "persona": "a sharp, fast-talking viral Shorts scriptwriter who reacts to "
+                   "whatever is blowing up on the internet right now.",
+        "brief": "a punchy reaction/commentary voiceover for a YouTube Short about this "
+                 "trending video",
+        "hook": "a scroll-stopping line that lands what just happened and why everyone "
+                "is talking about it, without spoiling the payoff",
+        "close": "ends by telling viewers to follow for more trending stories",
+        "title_rule": "high-CTR YouTube title under 70 chars referencing the person/topic",
+        "require_real": True,
+        "fb_title": "Everyone is talking about {channel} right now",
+        "fb_hook": "Everyone is talking about {channel} right now.",
+        "fb_tail": "The internet cannot stop arguing about this one. Follow for more "
+                   "trending stories every single day.",
+    },
+}
+
+
+def generate_trending_script(cfg, category, progress=None):
+    """Fetch a real trending video and write a reaction script about it.
+
+    Used by any category in TRENDING_CATEGORIES. Falls back to the invented-story
+    path if the fetch fails, and to a metadata-only script if the LLM fails.
     """
     import games
 
+    block = TRENDING_CATEGORIES.get(category, "games")
+    flavor = _TRENDING_FLAVOR.get(block, _TRENDING_FLAVOR["games"])
+
     try:
-        info = games.fetch_trending_game_video(cfg, progress)
+        info = games.fetch_trending_video(cfg, progress, block=block)
     except Exception as e:  # noqa: BLE001
+        # "trending" is commentary on real, current events. With no real video to
+        # react to there is nothing truthful to say, and the invented-story
+        # fallback would produce fake news about real people — so fail loudly.
+        if flavor.get("require_real"):
+            raise RuntimeError(
+                f"The '{category}' niche needs real trending data and could not fetch any: {e} "
+                f"Set YOUTUBE_API_KEY in .env — this niche will not invent events."
+            ) from e
         if progress:
-            progress("script", f"Games fetch failed ({e}) — using generic games story.")
+            progress("script", f"{block} fetch failed ({e}) — using generic story.")
         return generate_script(cfg, category, progress)
 
     llm = cfg.get("llm", {})
@@ -233,44 +338,38 @@ def generate_games_script(cfg, category, progress=None):
     if not llm.get("enabled") or not llm.get("api_key"):
         # No LLM: build a serviceable reaction script from the metadata directly.
         script = (
-            f"You won't believe what {info['channel']} just did. Their new video, "
+            f"{flavor['fb_hook'].format(channel=info['channel'])} Their new video, "
             f"{info['title']}, is already blowing up with over {info['views']:,} views. "
-            "Gamers everywhere are losing their minds over this one. If you're into "
-            "gaming, you have to see how this plays out. Follow for more insane gaming "
-            "moments every single day."
+            f"{flavor['fb_tail']}"
         )
         return {
-            "title": f"{info['channel']} just did the UNTHINKABLE",
-            "hook": f"You won't believe what {info['channel']} just did.",
+            "title": flavor["fb_title"].format(channel=info["channel"]),
+            "hook": flavor["fb_hook"].format(channel=info["channel"]),
             "script": script,
             "source_url": info["url"],
         }
 
     if progress:
-        progress("script", f"Writing a games reaction with {llm.get('model')}...")
+        progress("script", f"Writing a {block} reaction with {llm.get('model')}...")
 
     sys_prompt = (
-        "You are a top-tier viral gaming Shorts scriptwriter. You hype up trending "
-        "gaming clips so viewers NEED to watch. The first 5 seconds decide everything. "
+        f"You are {flavor['persona']} The first 5 seconds decide everything. "
         "Never invent specific facts that aren't supported by the video info given. "
         "No emojis, hashtags, or markdown. Output ONLY valid JSON."
     )
     user_prompt = (
-        "Write a hyped reaction/commentary voiceover for a YouTube Short about this "
-        "trending gaming video:\n\n"
+        f"Write {flavor['brief']}:\n\n"
         f"Title: {info['title']}\n"
         f"Channel: {info['channel']}\n"
         f"Views: {info['views']:,}\n"
         f"Tags: {', '.join(info['tags'][:10])}\n"
         f"Description: {info['description'][:600]}\n\n"
         "Requirements:\n"
-        "- HOOK (first ~5 seconds): a scroll-stopping 'you won't believe what this "
-        "gamer just did' style line that teases the craziest part without spoiling it.\n"
+        f"- HOOK (first ~5 seconds): {flavor['hook']}.\n"
         f"- SCRIPT: starts with the hook, ~{target} words, hyped and conversational, "
-        "builds excitement, and ends by telling viewers to follow for more gaming "
-        "clips. Base everything on the title/description above; don't fabricate "
-        "specific events.\n"
-        "- TITLE: high-CTR YouTube title under 70 chars referencing the gamer/game.\n\n"
+        f"builds excitement, and {flavor['close']}. Base everything on the "
+        "title/description above; don't fabricate specific events.\n"
+        f"- TITLE: {flavor['title_rule']}.\n\n"
         'Respond as JSON: {"title": "...", "hook": "...", "script": "..."}'
     )
 
@@ -304,12 +403,12 @@ def generate_games_script(cfg, category, progress=None):
         if progress:
             progress("script", f"LLM failed ({e}) — using metadata-based script.")
         return {
-            "title": f"{info['channel']} just did the UNTHINKABLE",
-            "hook": f"You won't believe what {info['channel']} just did.",
+            "title": flavor["fb_title"].format(channel=info["channel"]),
+            "hook": flavor["fb_hook"].format(channel=info["channel"]),
             "script": (
-                f"You won't believe what {info['channel']} just did in {info['title']}. "
-                f"It's already at {info['views']:,} views and blowing up. Follow for "
-                "more insane gaming moments every day."
+                f"{flavor['fb_hook'].format(channel=info['channel'])} "
+                f"{info['title']} is already at {info['views']:,} views and blowing up. "
+                f"{flavor['fb_tail']}"
             ),
             "source_url": info["url"],
         }
@@ -611,8 +710,8 @@ def generate_video(cfg, category="reddit", progress=None):
         progress("start", f"Starting generation for '{category}'")
 
     # 1. script
-    if category == "games":
-        story = generate_games_script(cat, category, progress)
+    if category in TRENDING_CATEGORIES:
+        story = generate_trending_script(cat, category, progress)
     else:
         story = generate_script(cat, category, progress)
 

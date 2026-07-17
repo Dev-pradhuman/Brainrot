@@ -36,9 +36,17 @@ Thumbs.db
 # Video production output files and local background caches
 **/output/
 **/_work/
-**/games_seen.json
+**/*_seen.json
 **/*.mp4
 **/*.webm
+
+# Import path: uploaded long-form sources and temp transcode dirs (import_clip.py)
+**/_imports/
+**/_import_*/
+**/_clip_*/
+
+# Read-only reference clones (e.g. JayWebtech/autoshorts) — never commit
+reference/
 
 # Keep empty background directories but ignore all video files inside them
 !Brainrot/Bg_anime/.gitkeep
@@ -49,6 +57,14 @@ Thumbs.db
 !Brainrot/Bg_horror/.gitkeep
 !Brainrot/Bg_relationship/.gitkeep
 !Brainrot/Bg_simpsons/.gitkeep
+!Brainrot/Bg_fifa/.gitkeep
+!Brainrot/Bg_gaming/.gitkeep
+!Brainrot/Bg_aitools/.gitkeep
+!Brainrot/Bg_trending/.gitkeep
+!Brainrot/Bg_colourgame/.gitkeep
+!Brainrot/Bg_squidgame/.gitkeep
+!Brainrot/Bg_movies/.gitkeep
+!Brainrot/Bg_gta6/.gitkeep
 
 # Exclude specific files
 test_range_output_1080p.mp4.part
